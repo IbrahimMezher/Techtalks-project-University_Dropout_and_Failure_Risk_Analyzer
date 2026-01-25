@@ -1,8 +1,4 @@
-# My-First-Repo
-echo "# My-First-Repo" >> README.md
-git init
-git add README.md
-git commit -m "first commit"
-git branch -M main
-git remote add origin https://github.com/IbrahimMezher/My-First-Repo.git
-git push -u origin main
+# University Dropout and Failure Risk Analyzer project
+Many students leave university due to financial pressure, workload shock, or academic difficulty. This
+project analyzes anonymized student data such as attendance, grades, and course difficulty to identify
+early risk indicators. The goal is prevention and support, not surveillance.
