@@ -50,18 +50,6 @@ body{
   gap: 10px;
 }
 
-.brand-mark
-{
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  display:grid;
-  place-items:center;
-  background: rgba(255,255,255,0.14);
-  border: 1px solid rgba(255,255,255,0.18);
-  font-weight: 800;
-  letter-spacing: 0.5px;
-}
 
 .brand-name
 {
@@ -82,13 +70,8 @@ body{
   padding: 10px 14px;
   cursor:pointer;
   font-weight: 600;
-  transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.btn:active
-{ 
-  transform: translateY(1px); 
-}
 
 .btn-ghost
 {
@@ -112,7 +95,6 @@ body{
 .btn-primary:hover
 {
   box-shadow: 0 14px 30px rgba(99,102,241,0.35);
-  transform: translateY(-1px);
 }
 
 .btn-lg

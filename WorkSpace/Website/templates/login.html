@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In</title>
+
+  <link rel="stylesheet" href="C:\Users\talal\OneDrive\Desktop\Internship Apps\Techtalks-project-University_Dropout_and_Failure_Risk_Analyzer\WorkSpace\Website\static\style2.css">
+
+</head>
+
+<body>
+    
+  <main class="auth">
+    <section class="card">
+      <header class="card-header">
+        <h1>Sign in to your account</h1>
+        <p class="subtext">Welcome back. Please enter your details.</p>
+      </header>
+
+      <form class="form" action="/signin" method="POST">
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" required />
+        </div>
+
+        <div class="field">
+          <div class="field-row">
+            <label for="password">Password</label>
+            <a class="link" href="">Forgot password?</a>
+          </div>
+          <input id="password" name="password" type="password" autocomplete="current-password" required />
+        </div>
+
+        <label class="check">
+          <input type="checkbox" name="remember" />
+          <span>Remember me on this device</span>
+        </label>
+
+        <button class="btn btn-primary" type="submit">Sign In</button>
+
+        <div class="divider">
+          <span>OR</span>
+        </div>
+
+        <button class="btn btn-ghost" type="button">Sign in with Google</button>
+
+        <p class="bottom-text">
+          New to Dropout Analyzer?
+          <a class="link" href="">Create account</a>
+        </p>
+      </form>
+    </section>
+  </main>
+</body>
+</html>
