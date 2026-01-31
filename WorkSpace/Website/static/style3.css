@@ -159,7 +159,15 @@ a
 {
   text-decoration: none;
 }
-
+.flashes
+{
+  text-align: center;
+}
+.error
+{
+  color:red;
+  font-size: 12px;
+}
 .btn-ghost:hover
 {
   background: rgba(255, 255, 255, 0.12);

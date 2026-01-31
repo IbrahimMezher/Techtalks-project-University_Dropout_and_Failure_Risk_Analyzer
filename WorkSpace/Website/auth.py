@@ -17,7 +17,7 @@ def login():
        
        user = User.query.filter_by(email =email).first()
        if not user or not check_password_hash(user.password,password):
-           flash("Email or Password are wrong","error")
+           flash("Email or Password are wrong","error1")
            return render_template("login.html")
        
        
@@ -37,20 +37,21 @@ def sign_up():
          first_name = request.form.get("first_name","").strip()
          last_name = request.form.get("last_name","").strip()
 
-         
-         if len(password1)<8 or not re.search(r"[A-Z]",password1) or not re.search(r"[!@#$%^&*(),.?\/-_:{}<>]",password1):
-          flash("Password should be greater than 7, have at least 1 uppercase, and 1 special character","error")
-          return render_template("signup.html")
-         
-         if password1 != password2:
-            flash("Passwords dont match","error")
-            return render_template("signup.html")
-         
          user = User.query.filter_by(email =email).first()
 
          if user:
-            flash("Email Exists please use a different one","error")
+            flash("Email Exists please use a different one","error4")
             return render_template("signup.html")
+
+         if len(password1)<8 or not re.search(r"[A-Z]",password1) or not re.search(r"[!@#$%^&*(),.?\/-_:{}<>]",password1):
+          flash("Password should be greater than 7, have at least 1 uppercase, and 1 special character","error2")
+          return render_template("signup.html")
+         
+         if password1 != password2:
+            flash("Passwords dont match","error3")
+            return render_template("signup.html")
+         
+         
          
          newuser = User(first_name=first_name,last_name=last_name,email = email,password= generate_password_hash(password1))
          db.session.add(newuser)
