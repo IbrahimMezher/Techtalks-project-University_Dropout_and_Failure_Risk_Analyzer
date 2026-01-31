@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+         <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up</title>
+  <link rel="stylesheet" href="../static/style3.css">
+  </head>
+    <body>
+        <div class="auth">
+           <section class="card">
+             <header class="card-header">
+                <h1>Sign Up</h1>
+                 <p class="subtext">Please enter your details.</p>
+             </header>
+             <form method="POST" class="form" action="/signup">
+                <div class="field">
+                     <label for="Fname">First Name</label>
+                  <input id="Fname" name="Fname" type="text" required />
+                </div>
+                <div class="field">
+                     <label for="Lname">Last Name</label>
+                  <input id="Lname" name="Lname" type="text" required />
+                </div>
+                <div class="field">
+                 <label for="email">Email</label>
+                  <input id="email" name="email" type="email" autocomplete="email" required />
+                 </div>
+
+        <div class="field">
+          <div class="field-row">
+            <label for="password1">Password</label>
+          </div>
+          <input id="password1" name="password1" type="password"  required />
+        </div>
+        <div class="field">
+          <div class="field-row">
+            <label for="password2">Confirm Password</label>
+          </div>
+          <input id="password2" name="password2" type="password"  required />
+        </div>
+
+        <button class="btn btn-primary" type="submit">Sign Up</button>
+
+        <div class="divider">
+          <span>OR</span>
+        </div>
+
+        <button class="btn btn-ghost" type="button">Sign up with Google</button>
+             </form>
+           </section>
+        </div>
+    </body>
+</html>
