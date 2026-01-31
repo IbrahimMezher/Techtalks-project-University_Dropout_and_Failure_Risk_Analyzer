@@ -186,7 +186,10 @@ input[type="password"]:focus
   color: rgba(234, 240, 255, 0.9);
   text-decoration: none;
 }
-
+a 
+{
+  text-decoration: none;
+}
 .link:hover
 {
   text-decoration: underline;

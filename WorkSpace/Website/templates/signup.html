@@ -4,9 +4,10 @@
          <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sign Up</title>
-  <link rel="stylesheet" href="../static/style3.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style3.css') }}">
   </head>
     <body>
+  
         <div class="auth">
            <section class="card">
              <header class="card-header">
@@ -16,11 +17,11 @@
              <form method="POST" class="form" action="/signup">
                 <div class="field">
                      <label for="Fname">First Name</label>
-                  <input id="Fname" name="Fname" type="text" required />
+                  <input id="Fname" name="first_name" type="text" required />
                 </div>
                 <div class="field">
                      <label for="Lname">Last Name</label>
-                  <input id="Lname" name="Lname" type="text" required />
+                  <input id="Lname" name="last_name" type="text" required />
                 </div>
                 <div class="field">
                  <label for="email">Email</label>
@@ -52,7 +53,7 @@
 
             <p class="bottom-text">
              Already have an account?
-             <a class="link" href="/signin">Sign in</a>
+             <a class="link" href="{{ url_for('auth.login') }}">Sign in</a>
              </p>
              </form>
            </section>

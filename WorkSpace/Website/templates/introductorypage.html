@@ -5,7 +5,7 @@
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>University Dropout Risk Analyzer</title>
-      <link rel="stylesheet" href="../static/style1.css">
+      <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
      </head>
     <body>
         <nav class="nav">
@@ -14,7 +14,7 @@
   </div>
 
   <div class="nav-buttons">
-    <button class="btn btn-ghost" id="btnsignin">Sign in</button>
+    <a href="{{ url_for('auth.login') }}" class="btn btn-ghost">Sign in</a>
     <button class="btn btn-primary" id="btncontact">Contact Us →</button>
   </div>
 </nav>
@@ -36,7 +36,8 @@
   <br>
   <br>
   <div class="hero-actions">
-    <button class="btn btn-primary btn-lg" id="btngetstarted">Get Started</button>
+    
+    <a href="{{ url_for('auth.sign_up') }}" class="btn btn-primary btn-lg">Get Started</a>
     <button class="btn btn-ghost btn-lg">Learn more</button>
   </div>
 

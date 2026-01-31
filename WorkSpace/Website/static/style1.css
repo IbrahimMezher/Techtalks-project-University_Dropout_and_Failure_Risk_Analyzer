@@ -12,6 +12,10 @@ body{
   animation: gradientBG 14s ease infinite;
 }
 
+a 
+{
+  text-decoration: none;
+}
 
 .nav
 {
