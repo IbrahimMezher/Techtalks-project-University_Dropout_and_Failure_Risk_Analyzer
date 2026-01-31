@@ -10,7 +10,7 @@
 </head>
 
 <body>
-   
+  
   <div class="auth">
     <section class="card">
       <header class="card-header">
@@ -31,12 +31,19 @@
           </div>
           <input id="password" name="password" type="password" autocomplete="current-password" required />
         </div>
-
+        <div class="flashes">
+           {% with messages = get_flashed_messages(with_categories=True) %}
+           {% for category, message in messages %}
+           {% if category == "error1" %}
+           <p class="error">{{ message }}</p>
+           {% endif %}
+           {% endfor %}
+           {% endwith %}
+           </div>
         <label class="check">
           <input type="checkbox" name="remember" />
           <span>Remember me on this device</span>
         </label>
-
         <button class="btn btn-primary" type="submit">Sign In</button>
 
         <div class="divider">

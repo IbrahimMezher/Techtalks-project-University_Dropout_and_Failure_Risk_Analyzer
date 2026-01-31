@@ -190,6 +190,15 @@ a
 {
   text-decoration: none;
 }
+.error
+{
+  color: red;
+  font-size: 12px;
+}
+.flashes
+{
+  text-align: center;
+}
 .link:hover
 {
   text-decoration: underline;

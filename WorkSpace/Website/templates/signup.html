@@ -26,19 +26,47 @@
                 <div class="field">
                  <label for="email">Email</label>
                   <input id="email" name="email" type="email" autocomplete="email" required />
+                  <div class="flashes">
+                   {% with messages = get_flashed_messages(with_categories=True) %}
+                   {% for category, message in messages %}
+                   {% if category == "error4" %}
+                   <p class="error">{{ message }}</p>
+                   {% endif %}
+                   {% endfor %}
+                   {% endwith %}
+                   </div>
                  </div>
 
         <div class="field">
           <div class="field-row">
             <label for="password1">Password</label>
           </div>
+          
           <input id="password1" name="password1" type="password"  required />
+           <div class="flashes">
+           {% with messages = get_flashed_messages(with_categories=True) %}
+           {% for category, message in messages %}
+           {% if category == "error2" %}
+           <p class="error">{{ message }}</p>
+           {% endif %}
+           {% endfor %}
+           {% endwith %}
+           </div>
         </div>
         <div class="field">
           <div class="field-row">
             <label for="password2">Confirm Password</label>
           </div>
           <input id="password2" name="password2" type="password"  required />
+          <div class="flashes">
+           {% with messages = get_flashed_messages(with_categories=True) %}
+           {% for category, message in messages %}
+           {% if category == "error3" %}
+           <p class="error">{{ message }}</p>
+           {% endif %}
+           {% endfor %}
+           {% endwith %}
+          </div>
         </div>
 
         
