@@ -64,3 +64,7 @@ def sign_up():
 def logout():
    logout_user()
    return redirect(url_for("views.intro"))
+
+@auth.route("/reset_password")
+def resetpassword():
+        return render_template("resetpassword.html")
