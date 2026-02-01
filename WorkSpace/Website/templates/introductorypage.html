@@ -1,1 +1,126 @@
 
+<<<<<<< HEAD
+=======
+<html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>University Dropout Risk Analyzer</title>
+      <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
+     </head>
+    <body>
+        <nav class="nav">
+  <div class="brand">
+    <span class="brand-name">Dropout Analyzer</span>
+  </div>
+
+  <div class="nav-buttons">
+    <a href="{{ url_for('auth.login') }}" class="btn btn-ghost">Sign in</a>
+    <a href="#contactus" class="btn btn-primary" id="btncontact">Contact Us</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <h1 class="hero-title">
+    Early academic insights to prevent failure and dropout.
+  </h1>
+
+  <p class="hero-subtitle">
+    Analyze attendance, performance, and course difficulty to identify risk and support students before it’s too late.
+  </p>
+  <div class="hero-pills">
+    <span class="pill">Attendance</span>
+    <span class="pill">Grades</span>
+    <span class="pill">Difficulty</span>
+    <span class="pill">Early alerts</span>
+  </div>
+  <br>
+  <br>
+  <div class="hero-actions">
+    
+    <a href="{{ url_for('auth.sign_up') }}" class="btn btn-primary btn-lg">Get Started</a>
+    <a href="#learnmore" class="btn btn-ghost btn-lg">Learn more</a>
+  </div>
+  
+</section>
+
+   <section id="learnmore">
+    <div>
+    <div class="learnmore-head">
+       <h2>How it works</h2>
+       <p>This tool helps identify risk early</p>
+    </div>
+    <div class="learnmore-body1"> 
+     <div class="field">
+      <h2>
+        1) Track
+      </h2>
+      <p>Attendance,grades,homeworks and
+         course difficulty are entered.</p>
+    </div>
+    <div class="field">
+      <h2>
+        2) Calculate Risk
+      </h2>
+      <p>This happens through our analyzer.</p>
+    </div>
+    <div class="field">
+      <h2>
+        3) Act early
+      </h2>
+      <p>Helps users student 
+        before dropping out or failing.</p>
+    </div>
+    </div>
+    <div class="learnmore-body2">
+      <div class="row1">
+       <div class="col1">
+        <h1>1</h1>
+       </div>
+       <div class="col2">
+         <h1>2</h1>
+       </div>
+      </div>
+      <div class="row2">
+       <div class="col1">
+        <h1>3</h1>
+       </div>
+       <div class="col2">
+        <h1>4</h1>
+       </div>
+      </div>
+    </div>
+    </div>
+   </section>
+
+   <section id="contactus">
+        <div class="contact-head">
+          <h2>Contact Us</h2>
+          <p class="muted">Have feedback? Please don't hesitate to send a message.</p>
+          <div class="contact-grid">
+            <form action="/Contact_us" class="card contact-form" method="POST">
+            <div class="field">
+              <label for="c_name">Name</label>
+              <input type="text" name="name" id="c_name" placeholder="Your name" required>
+            </div>
+             <div class="field">
+              <label for="c_email">Email</label>
+              <input type="email" id="c_email" name="email" placeholder="@example.com" required>
+            </div>
+             <div class="field">
+              <label for="c_message">Message</label>
+              <input type="text"id="c_message" name="message" placeholder="Write message" required>
+            </div>
+             <div>
+              <button class="btn btn-primary" type="submit"> Send Message</button>
+
+            </div>
+            </form>
+          </div>
+        </div>
+   </section>
+
+
+    </body>
+</html>
+>>>>>>> ffbc0ce (test)
