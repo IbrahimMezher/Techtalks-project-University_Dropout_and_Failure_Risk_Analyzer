@@ -8,3 +8,4 @@ class User(db.Model, UserMixin):
     last_name = db.Column(db.String(30))
     email = db.Column(db.String(70), unique=True)
     password = db.Column(db.String(50))
+
