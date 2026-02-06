@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style7.css') }}">
+</head>
+
+<body>
+  <div class="bg-blob blob-1"></div>
+  <div class="bg-blob blob-2"></div>
+  <div class="bg-grid"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-dot"></span>
+      <span class="brand-name">Dropout Analyzer</span>
+    </div>
+
+    <nav class="nav">
+      <a class="navlink active">Dashboard</a>
+      <a class="navlink">Students</a>
+      <a class="navlink">Reports</a>
+      <a class="navlink">Settings</a>
+    </nav>
+
+    <div class="userbox">
+      <span class="avatar">IM</span>
+      <div class="usertext">
+        <strong>Ibrahim</strong>
+        <span>Advisor</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="sidebar">
+      <h3>Quick Actions</h3>
+      <button class="sidebtn">+ Add Student</button>
+      <button class="sidebtn">Upload Grades</button>
+      <button class="sidebtn">Run Analysis</button>
+      <button class="sidebtn ghost">Export Report</button>
+    </aside>
+
+    <section class="content">
+
+      <section class="stats">
+        <div class="stat">
+          <span class="stat-title">Students monitored</span>
+          <h2>142</h2>
+          <p class="muted">+6 this week</p>
+        </div>
+
+        <div class="stat">
+          <span class="stat-title">High risk</span>
+          <h2 class="danger">18</h2>
+          <p class="muted">Needs intervention</p>
+        </div>
+
+        <div class="stat">
+          <span class="stat-title">Moderate risk</span>
+          <h2 class="warn">34</h2>
+          <p class="muted">Watch closely</p>
+        </div>
+
+        <div class="stat">
+          <span class="stat-title">Low risk</span>
+          <h2 class="success">90</h2>
+          <p class="muted">Stable students</p>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Recent Alerts</h2>
+          <button class="btn small">View all</button>
+        </div>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Course</th>
+              <th>Risk</th>
+              <th>Reason</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Ahmad Khaled</td>
+              <td>Calculus II</td>
+              <td><span class="badge danger">High</span></td>
+              <td>Attendance dropped</td>
+            </tr>
+            <tr>
+              <td>Sara Nader</td>
+              <td>Physics</td>
+              <td><span class="badge warn">Moderate</span></td>
+              <td>Low exam score</td>
+            </tr>
+            <tr>
+              <td>Hassan Ali</td>
+              <td>Programming</td>
+              <td><span class="badge success">Low</span></td>
+              <td>Stable</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="panel grid2">
+        <div class="chart">
+          <h3>Risk Distribution</h3>
+          <div class="fakechart">
+            <div class="bar high" style="height:60%"></div>
+            <div class="bar mid" style="height:35%"></div>
+            <div class="bar low" style="height:80%"></div>
+          </div>
+        </div>
+
+        <div class="chart">
+          <h3>Upcoming Follow-ups</h3>
+          <ul class="list">
+            <li><span>Ahmad Khaled</span><small>Tomorrow</small></li>
+            <li><span>Sara Nader</span><small>In 2 days</small></li>
+            <li><span>Karim Youssef</span><small>Next week</small></li>
+          </ul>
+        </div>
+      </section>
+
+    </section>
+  </main>
+</body>
+</html>

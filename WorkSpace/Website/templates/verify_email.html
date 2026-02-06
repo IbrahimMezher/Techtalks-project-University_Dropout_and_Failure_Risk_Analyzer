@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verify Email</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style4.css') }}">
+</head>
+
+<body>
+  <div class="bg-blob blob-1" aria-hidden="true"></div>
+  <div class="bg-blob blob-2" aria-hidden="true"></div>
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <div class="auth">
+    <section class="card">
+      <header class="card-header">
+        <div class="brandline">
+          <span class="brand-dot" aria-hidden="true"></span>
+          <span class="brand-name">Dropout Analyzer</span>
+        </div>
+
+        <h1>Email verification</h1>
+        <p class="subtext">
+          We sent a 6-digit code to
+          <span class="email-pill">{{ email }}</span>
+        </p>
+      </header>
+
+      <form method="POST" class="form" autocomplete="one-time-code">
+        <input type="hidden" name="code" id="code" />
+
+        <div class="otp">
+          <input class="otp-box" inputmode="numeric" maxlength="1" aria-label="Digit 1">
+          <input class="otp-box" inputmode="numeric" maxlength="1" aria-label="Digit 2">
+          <input class="otp-box" inputmode="numeric" maxlength="1" aria-label="Digit 3">
+          <input class="otp-box" inputmode="numeric" maxlength="1" aria-label="Digit 4">
+          <input class="otp-box" inputmode="numeric" maxlength="1" aria-label="Digit 5">
+          <input class="otp-box" inputmode="numeric" maxlength="1" aria-label="Digit 6">
+        </div>
+
+        <button class="btn btn-primary" type="submit">Verify</button>
+
+        <div class="links">
+          <a class="link" href="{{ url_for('auth.resend_verify_email', email=email) }}">Resend code</a>
+          <span class="dot" aria-hidden="true">•</span>
+          <a class="link" href="{{ url_for('auth.login') }}">Back to login</a>
+        </div>
+
+        <div class="flashes">
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for cat, msg in messages %}
+              <p class="flash {{ cat }}">{{ msg }}</p>
+            {% endfor %}
+          {% endwith %}
+        </div>
+      </form>
+
+      <div class="help">
+        <p class="hint">
+          Didn’t receive it? Check spam/junk, or wait 30 seconds then resend.
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const boxes = Array.from(document.querySelectorAll(".otp-box"));
+    const hidden = document.getElementById("code");
+
+    function syncHidden() {
+      hidden.value = boxes.map(b => b.value.trim()).join("");
+    }
+
+    boxes.forEach((box, i) => {
+      box.addEventListener("input", (e) => {
+
+        box.value = box.value.replace(/\D/g, "").slice(0, 1);
+        if (box.value && i < boxes.length - 1) boxes[i + 1].focus();
+        syncHidden();
+      });
+
+      box.addEventListener("keydown", (e) => {
+        if (e.key === "Backspace" && !box.value && i > 0) {
+          boxes[i - 1].focus();
+        }
+      });
+
+      box.addEventListener("paste", (e) => {
+        e.preventDefault();
+        const paste = (e.clipboardData || window.clipboardData).getData("text");
+        const digits = paste.replace(/\D/g, "").slice(0, 6).split("");
+        digits.forEach((d, idx) => {
+          if (boxes[idx]) boxes[idx].value = d;
+        });
+        const next = Math.min(digits.length, boxes.length - 1);
+        boxes[next].focus();
+        syncHidden();
+      });
+    });
+
+    boxes[0]?.focus();
+
+    document.querySelector("form")?.addEventListener("submit", () => {
+      syncHidden();
+    });
+  </script>
+</body>
+</html>

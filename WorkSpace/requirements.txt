@@ -1,0 +1,10 @@
+Flask
+Flask-SQLALchemy
+Flask-Login
+Flask-Limiter
+gunicorn
+psycopg2-binary
+python-dotenv
+requests
+itsdangerous
+Werkzeug
