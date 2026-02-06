@@ -1,5 +1,6 @@
-from flask import Blueprint, render_template, request, url_for, redirect
+from flask import Blueprint, render_template, request, url_for, redirect,flash
 from flask_login import login_required, current_user
+from .emailer import contact_us_function
 
 views = Blueprint('views', __name__)
 
@@ -7,7 +8,7 @@ views = Blueprint('views', __name__)
 @views.route('/home')
 @login_required
 def home():
-    return render_template("homepage.html")
+    return render_template("studenthomepage.html")
 
 
 @views.route('/', methods=['GET', 'POST'])
@@ -22,4 +23,11 @@ def intro():
 
 @views.route('/Contact_us', methods=['GET', 'POST'])
 def contact():
+  if request.method == "POST":
+    email = request.form.get("email")
+    name = request.form.get("name")
+    message = request.form.get("message")
+
+    contact_us_function(email,message,name) 
+    flash("Thank you for contacting us we'll reach back to you in 24 hours.")         
     return render_template("introductorypage.html")
