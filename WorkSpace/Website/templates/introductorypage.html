@@ -1,124 +1,259 @@
 <!DOCTYPE html>
-
 <html>
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>University Dropout Risk Analyzer</title>
-      <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
-     </head>
-    <body>
-        <nav class="nav">
-  <div class="brand">
-    <span class="brand-name">Dropout Analyzer</span>
-  </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>University Dropout Risk Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}" />
+  </head>
 
-  <div class="nav-buttons">
-    <a href="{{ url_for('auth.login') }}" class="btn btn-ghost">Sign in</a>
-    <a href="#contactus" class="btn btn-primary" id="btncontact">Contact Us</a>
+  <body>
+    
+    <div class="bg-blob blob-1" aria-hidden="true"></div>
+    <div class="bg-blob blob-2" aria-hidden="true"></div>
+    <div class="bg-grid" aria-hidden="true"></div>
+
+    <nav class="navbar">
+  <div class="nav-inner">
+
+    <div class="nav-left">
+      <div class="logo">Dropout Analyzer</div>
+
+      <div class="nav-links">
+        <a href="#learnmore">How it works</a>
+        <a href="#contactus">Contact</a>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <a href="{{ url_for('auth.login') }}" class="signin-btn">Sign in</a>
+    </div>
+
   </div>
 </nav>
 
-<section class="hero">
-  <h1 class="hero-title">
-    Early academic insights to prevent failure and dropout.
-  </h1>
 
-  <p class="hero-subtitle">
-    Analyze attendance, performance, and course difficulty to identify risk and support students before it’s too late.
-  </p>
-  <div class="hero-pills">
-    <span class="pill">Attendance</span>
-    <span class="pill">Grades</span>
-    <span class="pill">Difficulty</span>
-    <span class="pill">Early alerts</span>
-  </div>
-  <br>
-  <br>
-  <div class="hero-actions">
-    
-    <a href="{{ url_for('auth.sign_up') }}" class="btn btn-primary btn-lg">Get Started</a>
-    <a href="#learnmore" class="btn btn-ghost btn-lg">Learn more</a>
-  </div>
-  
-</section>
 
-   <section id="learnmore">
-    <div>
-    <div class="learnmore-head">
-       <h2>How it works</h2>
-       <p>This tool helps identify risk early</p>
-    </div>
-    <div class="learnmore-body1"> 
-     <div class="field">
-      <h2>
-        1) Track
-      </h2>
-      <p>Attendance,grades,homeworks and
-         course difficulty are entered.</p>
-    </div>
-    <div class="field">
-      <h2>
-        2) Calculate Risk
-      </h2>
-      <p>This happens through our analyzer.</p>
-    </div>
-    <div class="field">
-      <h2>
-        3) Act early
-      </h2>
-      <p>Helps users student 
-        before dropping out or failing.</p>
-    </div>
-    </div>
-    <div class="learnmore-body2">
-      <div class="row1">
-       <div class="col1">
-        <h1>1</h1>
-       </div>
-       <div class="col2">
-         <h1>2</h1>
-       </div>
+
+    <section class="hero">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="hero-badge">
+            <span class="pulse-dot" aria-hidden="true"></span>
+            Early Alerts • Smarter Interventions
+          </div>
+
+          <h1 class="hero-title">Early academic insights to prevent failure and dropout.</h1>
+
+          <p class="hero-subtitle">
+            Analyze attendance, performance, and course difficulty to identify risk and support students before it’s too late.
+          </p>
+
+          <div class="hero-pills">
+            <span class="pill">Attendance</span>
+            <span class="pill">Grades</span>
+            <span class="pill">Difficulty</span>
+            <span class="pill">Early alerts</span>
+          </div>
+
+          <div class="hero-actions">
+            <a href="{{ url_for('auth.sign_up') }}" class="btn btn-primary btn-lg">Get Started</a>
+            <a href="#learnmore" class="btn btn-ghost btn-lg">Learn more</a>
+          </div>
+
+          <div class="hero-stats">
+            <div class="stat">
+              <div class="stat-num">⚡</div>
+              <div class="stat-text">
+                <strong>Fast</strong>
+                <span>Risk scoring in seconds</span>
+              </div>
+            </div>
+            <div class="stat">
+              <div class="stat-num">🎯</div>
+              <div class="stat-text">
+                <strong>Focused</strong>
+                <span>Highlights early warning signs</span>
+              </div>
+            </div>
+            <div class="stat">
+              <div class="stat-num">🧠</div>
+              <div class="stat-text">
+                <strong>Actionable</strong>
+                <span>Supports decisions & follow-up</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-right" aria-hidden="true">
+          <div class="glass-card big">
+            <div class="mini-top">
+              <span class="mini-pill">Live Preview</span>
+              <span class="mini-pill ghost">Dropout Risk</span>
+            </div>
+
+            <div class="meter">
+              <div class="meter-head">
+                <span>Risk level</span>
+                <strong class="risk">Moderate</strong>
+              </div>
+              <div class="bar">
+                <div class="bar-fill"></div>
+              </div>
+              <div class="meter-foot">
+                <span>Attendance</span><span class="muted2">76%</span>
+              </div>
+              <div class="meter-foot">
+                <span>Grades</span><span class="muted2">68%</span>
+              </div>
+              <div class="meter-foot">
+                <span>Difficulty</span><span class="muted2">High</span>
+              </div>
+            </div>
+
+            <div class="tips">
+              <div class="tip">
+                <div class="tip-ic">✅</div>
+                <div>
+                  <strong>Suggested action</strong>
+                  <p>Offer a short study plan + check-in session.</p>
+                </div>
+              </div>
+              <div class="tip">
+                <div class="tip-ic">📌</div>
+                <div>
+                  <strong>Early alert</strong>
+                  <p>Attendance dropped last 2 weeks.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="float-card fc-1">Smart insights</div>
+          <div class="float-card fc-2">Early alerts</div>
+          <div class="float-card fc-3">Simple inputs</div>
+        </div>
       </div>
-      <div class="row2">
-       <div class="col1">
-        <h1>3</h1>
-       </div>
-       <div class="col2">
-        <h1>4</h1>
-       </div>
-      </div>
-    </div>
-    </div>
-   </section>
+    </section>
 
-   <section id="contactus">
+    <section id="learnmore">
+      <div class="section-wrap">
+        <div class="learnmore-head">
+          <h2>How it works</h2>
+          <p>This tool helps identify risk early</p>
+        </div>
+
+        <div class="learnmore-grid">
+          <div class="learnmore-body1">
+            <div class="field cardish">
+              <h2>1) Track</h2>
+              <p>Attendance, grades, homeworks and course difficulty are entered.</p>
+            </div>
+            <div class="field cardish">
+              <h2>2) Calculate Risk</h2>
+              <p>This happens through our analyzer.</p>
+            </div>
+            <div class="field cardish">
+              <h2>3) Act early</h2>
+              <p>Helps users support students before dropping out or failing.</p>
+            </div>
+          </div>
+
+          <div class="learnmore-body2">
+            <div class="tile-grid">
+              <div class="tile">
+                <h3>Attendance</h3>
+                <p>Spot patterns early</p>
+              </div>
+              <div class="tile">
+                <h3>Grades</h3>
+                <p>Detect performance dips</p>
+              </div>
+              <div class="tile">
+                <h3>Difficulty</h3>
+                <p>Context matters</p>
+              </div>
+              <div class="tile">
+                <h3>Alerts</h3>
+                <p>Act before it’s late</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contactus">
+      <div class="section-wrap">
         <div class="contact-head">
           <h2>Contact Us</h2>
           <p class="muted">Have feedback? Please don't hesitate to send a message.</p>
+
           <div class="contact-grid">
             <form action="/Contact_us" class="card contact-form" method="POST">
-            <div class="field">
-              <label for="c_name">Name</label>
-              <input type="text" name="name" id="c_name" placeholder="Your name" required>
-            </div>
-             <div class="field">
-              <label for="c_email">Email</label>
-              <input type="email" id="c_email" name="email" placeholder="@example.com" required>
-            </div>
-             <div class="field">
-              <label for="c_message">Message</label>
-              <input type="text"id="c_message" name="message" placeholder="Write message" required>
-            </div>
-             <div>
-              <button class="btn btn-primary" type="submit"> Send Message</button>
+              <div class="field">
+                <label for="c_name">Name</label>
+                <input type="text" name="name" id="c_name" placeholder="Your name" required />
+              </div>
 
-            </div>
+              <div class="field">
+                <label for="c_email">Email</label>
+                <input type="email" id="c_email" name="email" placeholder="name@example.com" required />
+              </div>
+
+              <div class="field">
+                <label for="c_message">Message</label>
+                <textarea id="c_message" name="message" placeholder="Write your message..." required></textarea>
+              </div>
+
+              <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Send Message</button>
+                <span class="hint">We usually reply within 24 hours.</span>
+              </div>
             </form>
+
+            <div class="card contact-side">
+              <h3>Quick notes</h3>
+              <p class="muted">
+                Tell us what you’re building, what’s missing, or what should be improved. Screenshots help too.
+              </p>
+
+              <div class="info-row">
+                <span>Focus</span>
+                <strong>Student support</strong>
+              </div>
+              <div class="info-row">
+                <span>Use case</span>
+                <strong>Early risk detection</strong>
+              </div>
+              <div class="info-row">
+                <span>Privacy</span>
+                <strong>Minimal data</strong>
+              </div>
+
+              <div class="chips">
+                <span class="chip">Usability</span>
+                <span class="chip">Bugs</span>
+                <span class="chip">Ideas</span>
+                <span class="chip">Design</span>
+              </div>
+            </div>
           </div>
         </div>
-   </section>
+      </div>
+    </section>
 
-
-    </body>
+    <script>
+      document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener("click", e => {
+          const id = a.getAttribute("href");
+          const el = document.querySelector(id);
+          if (!el) return;
+          e.preventDefault();
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      });
+    </script>
+  </body>
 </html>

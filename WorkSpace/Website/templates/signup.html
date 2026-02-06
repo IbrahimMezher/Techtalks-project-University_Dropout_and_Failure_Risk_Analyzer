@@ -1,90 +1,144 @@
 <!DOCTYPE html>
 <html>
-    <head>
-         <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sign Up</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style3.css') }}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style3.css') }}">
   </head>
-    <body>
-  
-        <div class="auth">
-           <section class="card">
-             <header class="card-header">
-                <h1>Sign Up</h1>
-                 <p class="subtext">Please enter your details.</p>
-             </header>
-             <form method="POST" class="form" action="/signup">
-                <div class="field">
-                     <label for="Fname">First Name</label>
-                  <input id="Fname" name="first_name" type="text" required />
-                </div>
-                <div class="field">
-                     <label for="Lname">Last Name</label>
-                  <input id="Lname" name="last_name" type="text" required />
-                </div>
-                <div class="field">
-                 <label for="email">Email</label>
-                  <input id="email" name="email" type="email" autocomplete="email" required />
-                  <div class="flashes">
-                   {% with messages = get_flashed_messages(with_categories=True) %}
-                   {% for category, message in messages %}
-                   {% if category == "error4" %}
-                   <p class="error">{{ message }}</p>
-                   {% endif %}
-                   {% endfor %}
-                   {% endwith %}
-                   </div>
-                 </div>
 
-        <div class="field">
-          <div class="field-row">
-            <label for="password1">Password</label>
+  <body>
+    <div class="bg-blob blob-1" aria-hidden="true"></div>
+    <div class="bg-blob blob-2" aria-hidden="true"></div>
+    <div class="bg-grid" aria-hidden="true"></div>
+
+    <div class="auth">
+      <section class="card">
+        <header class="card-header">
+          <div class="brandline">
+            <span class="brand-dot" aria-hidden="true"></span>
+            <span class="brand-name">Dropout Analyzer</span>
           </div>
-          
-          <input id="password1" name="password1" type="password"  required />
-           <div class="flashes">
-           {% with messages = get_flashed_messages(with_categories=True) %}
-           {% for category, message in messages %}
-           {% if category == "error2" %}
-           <p class="error">{{ message }}</p>
-           {% endif %}
-           {% endfor %}
-           {% endwith %}
-           </div>
-        </div>
-        <div class="field">
-          <div class="field-row">
-            <label for="password2">Confirm Password</label>
+
+          <h1>Create your account</h1>
+          <p class="subtext">Please enter your details.</p>
+        </header>
+
+        <form method="POST" class="form" action="/signup">
+          <div class="two-col">
+            <div class="field">
+              <label for="Fname">First Name</label>
+              <input id="Fname" name="first_name" type="text" placeholder="" required />
+            </div>
+
+            <div class="field">
+              <label for="Lname">Last Name</label>
+              <input id="Lname" name="last_name" type="text" placeholder="" required />
+            </div>
           </div>
-          <input id="password2" name="password2" type="password"  required />
-          <div class="flashes">
-           {% with messages = get_flashed_messages(with_categories=True) %}
-           {% for category, message in messages %}
-           {% if category == "error3" %}
-           <p class="error">{{ message }}</p>
-           {% endif %}
-           {% endfor %}
-           {% endwith %}
+
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" autocomplete="email" placeholder="name@example.com" required />
+
+            <div class="flashes">
+              {% with messages = get_flashed_messages(with_categories=True) %}
+              {% for category, message in messages %}
+              {% if category == "error4" %}
+              <p class="error">{{ message }}</p>
+              {% endif %}
+              {% endfor %}
+              {% endwith %}
+            </div>
           </div>
-        </div>
 
-        
+          <div class="field">
+            <div class="field-row">
+              <label for="password1">Password</label>
+              <span class="hint-mini">8+ chars, 1 uppercase, 1 lowercase</span>
+            </div>
 
-        <button class="btn btn-primary" type="submit">Sign Up</button>
+            <div class="password-wrap">
+              <input id="password1" name="password1" type="password" placeholder="••••••••" required />
+              <button class="eye eye1" type="button" aria-label="Show password">
+                <svg class="eye-open" viewBox="0 0 24 24">
+                <path d="M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/>
+                </svg>
+                <svg class="eye-closed" viewBox="0 0 24 24">
+                <path d="M2 2l20 20M12 5c-7 0-10 7-10 7a17 17 0 0 0 5 5M9.5 9.5a3.5 3.5 0 0 0 5 5"/>
+                </svg>
+              </button>
+            </div>
 
-        <div class="divider">
-          <span>OR</span>
-        </div>
+            <div class="flashes">
+              {% with messages = get_flashed_messages(with_categories=True) %}
+              {% for category, message in messages %}
+              {% if category == "error2" %}
+              <p class="error">{{ message }}</p>
+              {% endif %}
+              {% endfor %}
+              {% endwith %}
+            </div>
+          </div>
 
-        <button class="btn btn-ghost" type="button">Sign up with Google</button>
+          <div class="field">
+            <div class="field-row">
+              <label for="password2">Confirm Password</label>
+            </div>
 
-            <p class="bottom-text">
-             Already have an account?
-             <a class="link" href="{{ url_for('auth.login') }}">Sign in</a>
-             </p>
-             </form>
-           </section>
-        </div>
-    </body>
+            <div class="password-wrap">
+              <input id="password2" name="password2" type="password" placeholder="••••••••" required />
+              <button class="eye eye2" type="button" aria-label="Show password"><svg class="eye-open" viewBox="0 0 24 24">
+           <path d="M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/>
+           </svg>
+           <svg class="eye-closed" viewBox="0 0 24 24">
+           <path d="M2 2l20 20M12 5c-7 0-10 7-10 7a17 17 0 0 0 5 5M9.5 9.5a3.5 3.5 0 0 0 5 5"/>
+           </svg></button>
+            </div>
+
+            <div class="flashes">
+              {% with messages = get_flashed_messages(with_categories=True) %}
+              {% for category, message in messages %}
+              {% if category == "error3" %}
+              <p class="error">{{ message }}</p>
+              {% endif %}
+              {% endfor %}
+              {% endwith %}
+            </div>
+          </div>
+
+          <button class="btn btn-primary" type="submit">Sign Up</button>
+
+          <div class="divider"><span>OR</span></div>
+
+          <button class="btn btn-ghost google" type="button">
+            <span class="gicon" aria-hidden="true">G</span>
+            Sign up with Google
+          </button>
+
+          <p class="bottom-text">
+            Already have an account?
+            <a class="link" href="{{ url_for('auth.login') }}">Sign in</a>
+          </p>
+        </form>
+      </section>
+    </div>
+
+    <script>
+document.querySelectorAll(".eye").forEach(btn=>{
+  const input = btn.parentElement.querySelector("input");
+  const open = btn.querySelector(".eye-open");
+  const closed = btn.querySelector(".eye-closed");
+
+  btn.addEventListener("click", ()=>{
+    const show = input.type === "password";
+    input.type = show ? "text" : "password";
+
+    open.style.opacity = show ? 0 : 1;
+    closed.style.opacity = show ? 1 : 0;
+  });
+});
+</script>
+
+  </body>
 </html>
