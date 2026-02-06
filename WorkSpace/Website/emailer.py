@@ -1,53 +1,104 @@
 import os
-import requests
+import smtplib
+import ssl
+from email.message import EmailMessage
 from dotenv import load_dotenv
 
 load_dotenv()
 
-EMAILJS_URL = "https://api.emailjs.com/api/v1.0/email/send"
+SMTP_HOST = os.getenv("SMTP_HOST")      
+SMTP_PORT = int(os.getenv("SMTP_PORT"))
+SMTP_USER = os.getenv("SMTP_USER")             
+SMTP_PASS = os.getenv("SMTP_PASS")             
+MAIL_FROM = os.getenv("MAIL_FROM", SMTP_USER)   
 
-SERVICE_ID = os.getenv("EMAILJS_SERVICE_ID")
-PUBLIC_KEY = os.getenv("EMAILJS_PUBLIC_KEY")
-PRIVATE_KEY = os.getenv("EMAILJS_PRIVATE_KEY")
+APP_BASE_URL = os.getenv("APP_BASE_URL")
 
-VERIFY_TEMPLATE_ID = os.getenv("EMAILJS_VERIFY_TEMPLATE_ID") #in this service we have two templates one for reset one for verify
-RESET_TEMPLATE_ID = os.getenv("EMAILJS_RESET_TEMPLATE_ID")
-APP_BASE_URL = os.getenv("APP_BASE_URL", "http://127.0.0.1:5000")
-#hol hene identified .env for protection w ahama shi .env never gets commit with the git because it has all the personal info
 
-def _send(template_id: str, params: dict):
+def _require_env():
     missing = [k for k, v in {
-        "EMAILJS_SERVICE_ID": SERVICE_ID,
-        "EMAILJS_PUBLIC_KEY": PUBLIC_KEY,
-        "template_id": template_id
+        "SMTP_HOST": SMTP_HOST,
+        "SMTP_PORT": SMTP_PORT,
+        "SMTP_USER": SMTP_USER,
+        "SMTP_PASS": SMTP_PASS,
+        "MAIL_FROM": MAIL_FROM
     }.items() if not v]
-    
-    payload = {
-        "service_id": SERVICE_ID,
-        "template_id": template_id,
-        "user_id": PUBLIC_KEY,
-        "template_params": params,
-        "accessToken": PRIVATE_KEY,
-    }
+    if missing:
+        raise RuntimeError(f"Email not configured. Missing: {', '.join(missing)}")
 
-    r = requests.post(EMAILJS_URL, json=payload, timeout=15)
 
-    r.raise_for_status()
-    return r.text
+def _send_email(to_email: str, subject: str, html_body: str, text_body: str | None = None):
+    _require_env()
+
+    msg = EmailMessage()
+    msg["From"] = MAIL_FROM
+    msg["To"] = to_email
+    msg["Subject"] = subject
+
+    if not text_body:
+        text_body = "Please view this email in an HTML-capable client."
+    msg.set_content(text_body)
+
+    msg.add_alternative(html_body, subtype="html")
+
+    if SMTP_PORT == 587:
+       
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=15) as server:
+            server.ehlo()
+            server.starttls(context=ssl.create_default_context())
+            server.ehlo()
+            server.login(SMTP_USER, SMTP_PASS)
+            server.send_message(msg)
 
 
 def send_verify_otp(to_email: str, passcode: str, minutes_valid: int = 15):
-    return _send(VERIFY_TEMPLATE_ID, {
-        "email": to_email,
-        "passcode": passcode,
-        "time": f"{minutes_valid} minutes"
-    })
-# as the name suggests to used for verify email with otp
+    subject = "Verify your email"
+    html = f"""
+    <div style="font-family:Arial,sans-serif;line-height:1.6">
+      <h2>Email Verification</h2>
+      <p>Your verification code is:</p>
+      <div style="font-size:28px;font-weight:700;letter-spacing:4px;
+                  padding:12px 16px;border:1px solid #ddd;display:inline-block">
+        {passcode}
+      </div>
+      <p style="margin-top:16px">This code expires in <b>{minutes_valid} minutes</b>.</p>
+    </div>
+    """
+    text = f"Your verification code is: {passcode} (expires in {minutes_valid} minutes)."
+    return _send_email(to_email, subject, html, text)
+
 
 def send_reset_link(to_email: str, token: str):
     link = f"{APP_BASE_URL}/reset-password/{token}"
-    return _send(RESET_TEMPLATE_ID, {
-        "email": to_email,
-        "link": link
-    })
-# btesta3mal metel ma elesem be2ool kermel reset link token la tehme (serializer)
+    subject = "Reset your password"
+    html = f"""
+    <div style="font-family:Arial,sans-serif;line-height:1.6">
+      <h2>Password Reset</h2>
+      <p>Click the button below to reset your password:</p>
+      <p>
+        <a href="{link}" style="background:#4f46e5;color:#fff;text-decoration:none;
+                               padding:10px 14px;border-radius:8px;display:inline-block">
+          Reset Password
+        </a>
+      </p>
+      <p>If the button doesn’t work, copy and paste this link:</p>
+      <p><a href="{link}">{link}</a></p>
+    </div>
+    """
+    text = f"Reset your password using this link: {link}"
+    return _send_email(to_email, subject, html, text)
+
+
+def contact_us_function(email:str,message:str,name:str):
+    subject = "User Contact"
+    html = f"""
+    <div style="font-family:Arial,sans-serif;line-height:1.6">
+      <h2>Name:{name}  Email:{email}</h2>
+      <div style="font-size:28px;font-weight:700;letter-spacing:4px;
+                  padding:12px 16px;border:1px solid #ddd;display:inline-block">
+                  {message}
+      </div>
+    </div>
+     """
+    text = f""
+    return _send_email(SMTP_USER,subject, html, text)
