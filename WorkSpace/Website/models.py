@@ -15,6 +15,8 @@ class User(db.Model, UserMixin):
     email_verified_at = db.Column(db.DateTime, nullable=True)
     email_otp_hash = db.Column(db.String(255), nullable=True)
     email_otp_expires_at = db.Column(db.DateTime, nullable=True)
+    role = db.Column(db.String(255), nullable=True)
+    choose_role = db.Column(db.Boolean,default=False,nullable=False)
 
 >>>>>>> f2aaf76 (latest update)
 

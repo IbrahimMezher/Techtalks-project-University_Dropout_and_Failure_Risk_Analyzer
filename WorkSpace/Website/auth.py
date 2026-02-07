@@ -67,6 +67,9 @@ def login():
             return redirect(url_for("auth.verify_email", email=user.email))
         #flask login b2alba hay built in
         login_user(user,remember=remember)
+        if not user.choose_role or not user.role:
+         return redirect(url_for("views.choose"))
+        
         return redirect(url_for("views.home"))
 
     return render_template("login.html")
@@ -107,7 +110,7 @@ def sign_up():
         issue_email_otp(newuser, minutes=15)
         flash("We sent a verification code to your email.", "success")
         return redirect(url_for("auth.verify_email", email=newuser.email))
-
+            
     return render_template("signup.html")
 
 #####################################################################################
