@@ -1,7 +1,6 @@
-
-<<<<<<< HEAD
-=======
-
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
 
 
 db = SQLAlchemy()
@@ -48,5 +47,3 @@ def create_app():
     
     return app
 
-
->>>>>>> f2aaf76 (latest update)

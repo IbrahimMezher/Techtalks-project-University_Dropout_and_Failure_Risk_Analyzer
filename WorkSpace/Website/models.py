@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 from flask_login import UserMixin
 from . import db
 
@@ -18,5 +16,4 @@ class User(db.Model, UserMixin):
     role = db.Column(db.String(255), nullable=True)
     choose_role = db.Column(db.Boolean,default=False,nullable=False)
 
->>>>>>> f2aaf76 (latest update)
 

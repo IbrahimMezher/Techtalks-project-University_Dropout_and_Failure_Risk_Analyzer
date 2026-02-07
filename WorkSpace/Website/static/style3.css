@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-=======
 :root{
   --bg: #f7f9ff;
   --text:#0f172a;
@@ -158,4 +155,4 @@ a{ text-decoration:none; color:inherit; }
 @media (max-width: 540px){
   .two-col{ grid-template-columns: 1fr; }
 }
->>>>>>> f2aaf76 (latest update)
+

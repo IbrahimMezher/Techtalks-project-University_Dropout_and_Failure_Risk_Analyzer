@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-=======
 :root{
   --bg: #f7f9ff;
   --text:#0f172a;
@@ -89,8 +86,7 @@ a{ text-decoration:none; color:inherit; }
   padding: 24px;
 }
 
-=======
->>>>>>> f4e47a3 (added a main.css that can be used in each new .html)
+
 .card{
   width: min(460px, 92vw);
 }
@@ -151,7 +147,7 @@ a{ text-decoration:none; color:inherit; }
   border: 1px solid rgba(15,23,42,.10);
   border-radius: 999px;
 }
-<<<<<<< HEAD
+
 
 .link{
   font-size: 13px;
@@ -235,6 +231,3 @@ a{ text-decoration:none; color:inherit; }
 .eye-closed{
   opacity:0;
 }
->>>>>>> f2aaf76 (latest update)
-=======
->>>>>>> f4e47a3 (added a main.css that can be used in each new .html)

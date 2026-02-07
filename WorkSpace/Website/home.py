@@ -1,24 +1,7 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
-from flask import Blueprint, render_template, request, url_for
-from flask_login import login_required
-import smtplib
-=======
-from flask import Blueprint, render_template, request, url_for, redirect
-from flask_login import login_required, current_user
->>>>>>> f2aaf76 (latest update)
-=======
 from flask import Blueprint, render_template, request, url_for, redirect,flash
 from flask_login import login_required, current_user
 from .emailer import contact_us_function
-<<<<<<< HEAD
->>>>>>> f4e47a3 (added a main.css that can be used in each new .html)
-=======
 from . import db
->>>>>>> 0affd23 (added student and instructor homepage plus the popup choose page and finished there routes)
 
 views = Blueprint('views', __name__)
 
@@ -55,9 +38,7 @@ def contact():
     contact_us_function(email,message,name) 
     flash("Thank you for contacting us we'll reach back to you in 24 hours.")         
     return render_template("introductorypage.html")
-<<<<<<< HEAD
->>>>>>> ffbc0ce (test)
-=======
+
 
 @views.route('/student')
 @login_required
@@ -92,5 +73,3 @@ def choose():
        db.session.commit()
        return redirect(url_for("views.home"))
     return render_template("choose_role.html")
-    
->>>>>>> 0affd23 (added student and instructor homepage plus the popup choose page and finished there routes)
