@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Student Home</title>
+  <title>Instructor Home</title>
 
   <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style8.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style9.css') }}">
 </head>
 
 <body>
@@ -23,8 +23,8 @@
 
       <nav class="nav">
         <a class="nav-item active" href="#">Dashboard</a>
-        <a class="nav-item" href="#">Courses</a>
-        <a class="nav-item" href="#">Calendar</a>
+        <a class="nav-item" href="#">Students</a>
+        <a class="nav-item" href="#">Reports</a>
         <a class="nav-item" href="#">Settings</a>
       </nav>
     </div>
@@ -33,24 +33,24 @@
   <main class="page">
     <section class="page-head">
       <div>
-        <h1 class="title">Student Dashboard</h1>
-        <p class="subtitle">Your courses, progress, and risk alerts in one place.</p>
+        <h1 class="title">Instructor Dashboard</h1>
+        <p class="subtitle">Review risk levels, track students, and take action early.</p>
       </div>
 
       <div class="head-actions">
-        <button class="btn btn-ghost">Add Course</button>
-        <button class="btn btn-primary">Run Risk Scan</button>
+        <button class="btn btn-ghost">Export Report</button>
+        <button class="btn btn-primary">Create Alert</button>
       </div>
     </section>
 
     <section class="cards">
       <div class="card metric">
         <div class="metric-top">
-          <span class="k">Courses Taken</span>
-          <span class="pill-soft">This term</span>
+          <span class="k">Students</span>
+          <span class="pill-soft">Total</span>
         </div>
-        <div class="metric-num">5</div>
-        <div class="metric-foot muted">You can add/remove courses anytime.</div>
+        <div class="metric-num">28</div>
+        <div class="metric-foot muted">Across active classes.</div>
       </div>
 
       <div class="card metric warn">
@@ -58,8 +58,8 @@
           <span class="k">At Risk</span>
           <span class="pill-warn">Medium</span>
         </div>
-        <div class="metric-num">2</div>
-        <div class="metric-foot muted">Keep attendance & grades stable.</div>
+        <div class="metric-num">6</div>
+        <div class="metric-foot muted">Needs follow-up soon.</div>
       </div>
 
       <div class="card metric danger">
@@ -67,20 +67,20 @@
           <span class="k">Critical</span>
           <span class="pill-danger">High</span>
         </div>
-        <div class="metric-num">1</div>
-        <div class="metric-foot muted">Consider quick intervention.</div>
+        <div class="metric-num">2</div>
+        <div class="metric-foot muted">Immediate intervention.</div>
       </div>
     </section>
 
     <section class="card table-card">
       <div class="table-head">
         <div>
-          <h2>Courses Overview</h2>
+          <h2>Students Overview</h2>
           <p class="muted">Example data (replace from backend later).</p>
         </div>
         <div class="table-actions">
-          <button class="btn btn-ghost">Sort</button>
           <button class="btn btn-ghost">Filter</button>
+          <button class="btn btn-ghost">Sort</button>
         </div>
       </div>
 
@@ -88,34 +88,38 @@
         <table class="tbl">
           <thead>
             <tr>
+              <th>Student</th>
               <th>Course</th>
               <th>Attendance</th>
               <th>Grade</th>
-              <th>Difficulty</th>
               <th>Risk</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><strong>Algorithms</strong></td>
-              <td>76%</td>
-              <td>68%</td>
-              <td>High</td>
-              <td><span class="risk med">Medium</span></td>
-            </tr>
-            <tr>
-              <td><strong>Databases</strong></td>
-              <td>91%</td>
-              <td>84%</td>
-              <td>Medium</td>
-              <td><span class="risk low">Low</span></td>
-            </tr>
-            <tr>
-              <td><strong>Physics</strong></td>
+              <td><strong>Ali Hassan</strong></td>
+              <td>Physics</td>
               <td>52%</td>
               <td>55%</td>
-              <td>High</td>
               <td><span class="risk high">High</span></td>
+              <td><button class="btn btn-ghost small">Contact</button></td>
+            </tr>
+            <tr>
+              <td><strong>Maya Karim</strong></td>
+              <td>Algorithms</td>
+              <td>76%</td>
+              <td>68%</td>
+              <td><span class="risk med">Medium</span></td>
+              <td><button class="btn btn-ghost small">Review</button></td>
+            </tr>
+            <tr>
+              <td><strong>Jad Farah</strong></td>
+              <td>Databases</td>
+              <td>91%</td>
+              <td>84%</td>
+              <td><span class="risk low">Low</span></td>
+              <td><button class="btn btn-ghost small">View</button></td>
             </tr>
           </tbody>
         </table>
