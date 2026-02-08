@@ -39,6 +39,16 @@
   const gradesList = qs('#grades-list');
   const gradesChart = qs('#grades-chart');
 
+  const openAttendance = qs('#open-attendance');
+  const modalAttendance = qs('#modal-attendance');
+  const attendanceCourse = qs('#attendance-course');
+  const attendanceDate = qs('#attendance-date');
+  const attendanceStatus = qs('#attendance-status');
+  const saveAttendance = qs('#save-attendance');
+  const cancelAttendance = qs('#cancel-attendance');
+  const attendanceChart = qs('#attendance-chart');
+  const attendanceSummary = qs('#attendance-summary');
+
   // storage helpers
   function load(key){ try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch(e){ return []; } }
   function save(key, v){ localStorage.setItem(key, JSON.stringify(v)); }
@@ -50,6 +60,7 @@
   let courses = load('courses');
   let grades = load('grades');
   let editingGradeId = null;
+  let attendance = load('attendance');
 
   // nav handlers
   function setActive(tab){
@@ -58,7 +69,7 @@
     navGrades.classList.remove('active');
     navCourses.blur(); navAttendance.blur(); navGrades.blur();
     if(tab==='courses'){ navCourses.classList.add('active'); panels.courses.style.display='block'; panels.attendance.style.display='none'; panels.grades.style.display='none'; }
-    if(tab==='attendance'){ navAttendance.classList.add('active'); panels.courses.style.display='none'; panels.attendance.style.display='block'; panels.grades.style.display='none'; }
+    if(tab==='attendance'){ navAttendance.classList.add('active'); panels.courses.style.display='none'; panels.attendance.style.display='block'; panels.grades.style.display='none'; renderAttendance(); }
     if(tab==='grades'){ navGrades.classList.add('active'); panels.courses.style.display='none'; panels.attendance.style.display='none'; panels.grades.style.display='block'; renderGrades(); }
   }
   navCourses.addEventListener('click', ()=> setActive('courses'));
@@ -91,6 +102,17 @@
       item.appendChild(right);
       enrolledList.appendChild(item);
     });
+  }
+
+  // color palette for attendance pie chart
+  const courseColors = {};
+  function getColorForCourse(courseId){
+    if(!courseColors[courseId]){
+      const colors = ['#0366d6', '#28a745', '#ffc107', '#e83e8c', '#17a2b8', '#fd7e14', '#6f42c1', '#20c997'];
+      const idx = Object.keys(courseColors).length % colors.length;
+      courseColors[courseId] = colors[idx];
+    }
+    return courseColors[courseId];
   }
 
   // enroll modal
@@ -159,6 +181,172 @@
       const o = document.createElement('option'); o.value=c.id; o.textContent = `${c.name}${c.code? ' ('+c.code+')':''}`;
       gradeCourse.appendChild(o);
     });
+  }
+
+  // attendance modal handlers
+  openAttendance.addEventListener('click', ()=>{
+    if(courses.length===0){ alert('No enrolled courses — enroll first.'); return; }
+    renderAttendanceOptions();
+    attendanceDate.value = new Date().toISOString().slice(0,10);
+    modalAttendance.style.display='flex';
+  });
+
+  cancelAttendance.addEventListener('click', ()=>{ modalAttendance.style.display='none'; clearAttendanceForm(); });
+
+  saveAttendance.addEventListener('click', ()=>{
+    const courseId = attendanceCourse.value;
+    const date = attendanceDate.value;
+    const status = attendanceStatus.value;
+    if(!courseId){ alert('Select course'); return; }
+    if(!date){ alert('Select date'); attendanceDate.focus(); return; }
+    const att = { id: uid(), courseId, date, status };
+    attendance.push(att);
+    save('attendance', attendance);
+    modalAttendance.style.display='none';
+    clearAttendanceForm();
+    renderAttendance();
+  });
+
+  function clearAttendanceForm(){ attendanceDate.value=''; attendanceStatus.value='present'; }
+
+  function renderAttendanceOptions(){
+    attendanceCourse.innerHTML = '';
+    courses.forEach(c => {
+      const o = document.createElement('option'); o.value=c.id; o.textContent = `${c.name}${c.code? ' ('+c.code+')':''}`;
+      attendanceCourse.appendChild(o);
+    });
+  }
+
+  // render attendance overview + pie chart
+  function renderAttendance(){
+    // summary table
+    attendanceSummary.innerHTML = '';
+    if(attendance.length===0){ attendanceSummary.innerHTML = '<div class="muted">No attendance records yet.</div>'; drawEmptyAttendanceChart(); return; }
+
+    // group by course
+    const grouped = {};
+    attendance.forEach(a => {
+      grouped[a.courseId] = grouped[a.courseId] || { present: 0, absent: 0 };
+      if(a.status === 'present') grouped[a.courseId].present++;
+      else grouped[a.courseId].absent++;
+    });
+
+    // build summary
+    const summaryTable = document.createElement('div');
+    summaryTable.style.marginTop = '12px';
+    Object.keys(grouped).forEach(cid => {
+      const course = courses.find(c => c.id === cid) || { name:'(unknown)' };
+      const stats = grouped[cid];
+      const total = stats.present + stats.absent;
+      const pct = total > 0 ? Math.round((stats.present / total) * 100) : 0;
+      const row = document.createElement('div');
+      row.style.display = 'flex';
+      row.style.justifyContent = 'space-between';
+      row.style.padding = '8px 0';
+      row.style.borderBottom = '1px solid #f0f0f0';
+      row.innerHTML = `<div><strong>${escapeHtml(course.name)}</strong><div class="muted">Present: ${stats.present} | Absent: ${stats.absent}</div></div><div style="text-align:right"><strong>${pct}%</strong></div>`;
+      summaryTable.appendChild(row);
+    });
+    attendanceSummary.appendChild(summaryTable);
+
+    // draw pie
+    drawAttendancePie(grouped);
+  }
+
+  function drawEmptyAttendanceChart(){
+    const ctx = attendanceChart.getContext('2d');
+    ctx.clearRect(0,0,attendanceChart.width,attendanceChart.height);
+    ctx.fillStyle='#f6f8fa';
+    ctx.fillRect(0,0,attendanceChart.width,attendanceChart.height);
+    ctx.fillStyle='#666'; ctx.font='14px Arial'; ctx.textAlign='center';
+    ctx.fillText('No attendance data', attendanceChart.width/2, 24);
+  }
+
+  function drawAttendancePie(grouped){
+    const canvas = attendanceChart;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width; const H = canvas.height;
+    ctx.clearRect(0,0,W,H);
+    if(Object.keys(grouped).length===0){ drawEmptyAttendanceChart(); return; }
+
+    const centerX = W / 2;
+    const centerY = H / 2;
+    const radius = Math.min(W, H) / 2 - 40;
+
+    // compute slices
+    const slices = [];
+    let startAngle = -Math.PI / 2;
+    Object.keys(grouped).forEach(cid => {
+      const course = courses.find(c => c.id === cid) || { name:'(unknown)' };
+      const stats = grouped[cid];
+      const total = stats.present + stats.absent;
+      const presentRatio = total > 0 ? stats.present / total : 0;
+      const presetnAngle = presentRatio * 2 * Math.PI;
+
+      slices.push({
+        courseId: cid,
+        courseName: course.name,
+        present: stats.present,
+        absent: stats.absent,
+        presentRatio,
+        startAngle,
+        endAngle: startAngle + presetnAngle,
+        color: getColorForCourse(cid)
+      });
+      startAngle += presetnAngle;
+
+      // also add absent slice if any
+      if(stats.absent > 0){
+        const absentAngle = (1 - presentRatio) * 2 * Math.PI;
+        slices.push({
+          courseId: cid + '_absent',
+          courseName: course.name + ' (Absent)',
+          present: 0,
+          absent: stats.absent,
+          presentRatio: 0,
+          startAngle,
+          endAngle: startAngle + absentAngle,
+          color: 'rgba(' + hexToRgb(getColorForCourse(cid)).join(',') + ', 0.3)'
+        });
+        startAngle += absentAngle;
+      }
+    });
+
+    // draw slices
+    slices.forEach(s => {
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY);
+      ctx.arc(centerX, centerY, radius, s.startAngle, s.endAngle);
+      ctx.closePath();
+      ctx.fillStyle = s.color;
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    });
+
+    // draw legend
+    ctx.fillStyle = '#333';
+    ctx.font = '12px Arial';
+    ctx.textAlign = 'left';
+    let legendY = 12;
+    Object.keys(grouped).forEach(cid => {
+      const course = courses.find(c => c.id === cid) || { name:'(unknown)' };
+      const stats = grouped[cid];
+      const total = stats.present + stats.absent;
+      const pct = total > 0 ? Math.round((stats.present / total) * 100) : 0;
+      // color swatch
+      ctx.fillStyle = getColorForCourse(cid);
+      ctx.fillRect(W - 140, legendY, 12, 12);
+      ctx.fillStyle = '#333';
+      ctx.fillText(`${escapeHtml(course.name)}: ${pct}%`, W - 120, legendY + 10);
+      legendY += 18;
+    });
+  }
+
+  function hexToRgb(hex){
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : [0,0,0];
   }
 
   // render grades overview + chart
@@ -290,9 +478,10 @@
   renderCourses();
   renderGradeOptions();
   renderGrades();
+  renderAttendance();
 
   // close modals when clicking outside
-  [modalEnroll, modalResolve].forEach(mod => {
+  [modalEnroll, modalResolve, modalAttendance].forEach(mod => {
     mod.addEventListener('click', (e) => { if(e.target === mod) mod.style.display = 'none'; });
   });
 

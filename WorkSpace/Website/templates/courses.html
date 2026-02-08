@@ -60,11 +60,22 @@
       </div>
     </section>
 
-    <!-- Attendance (placeholder) -->
+    <!-- Attendance -->
     <section id="panel-attendance" class="panel" style="display:none;">
-      <strong>Attendance</strong>
-      <div class="muted">Attendance tracking coming here. Select a course to view records.</div>
-      <div id="attendance-content" style="margin-top:12px;"></div>
+      <div class="row">
+        <div style="flex:1">
+          <strong>Attendance</strong>
+          <div class="muted">Track your attendance across courses</div>
+        </div>
+        <div>
+          <button id="open-attendance" class="btn primary">Resolve Attendance</button>
+        </div>
+      </div>
+
+      <div id="attendance-chart-container" style="margin-top:16px;">
+        <canvas id="attendance-chart" width="400" height="300"></canvas>
+      </div>
+      <div id="attendance-summary" style="margin-top:16px;"></div>
     </section>
 
     <!-- Grades -->
@@ -121,6 +132,28 @@
       <div style="display:flex;gap:8px;margin-top:8px;">
         <button id="save-grade" class="btn primary" style="flex:1;">Save Grade</button>
         <button id="cancel-grade" class="btn" style="flex:1;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Resolve Attendance Modal -->
+  <div id="modal-attendance" class="modal" style="display:none;">
+    <div class="modal-card">
+      <h3>Resolve Attendance</h3>
+      <label for="attendance-course">Course Name</label>
+      <select id="attendance-course">
+        <!-- populated from enrolled courses -->
+      </select>
+      <label for="attendance-date">Attendance Date</label>
+      <input id="attendance-date" type="date" />
+      <label for="attendance-status">Status</label>
+      <select id="attendance-status">
+        <option value="present">Present</option>
+        <option value="absent">Absent</option>
+      </select>
+      <div style="display:flex;gap:8px;margin-top:12px;">
+        <button id="save-attendance" class="btn primary" style="flex:1;">Save</button>
+        <button id="cancel-attendance" class="btn" style="flex:1;">Cancel</button>
       </div>
     </div>
   </div>
