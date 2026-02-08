@@ -1,9 +1,6 @@
-
-<<<<<<< HEAD
-=======
-
-
-
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
 db = SQLAlchemy()
 
 
@@ -38,9 +35,11 @@ def create_app():
 
     from .home import views
     from .auth import auth
+    from .courses import courses_bp
 
     app.register_blueprint(views, url_prefix="/")
     app.register_blueprint(auth, url_prefix="/")
+    app.register_blueprint(courses_bp, url_prefix="/")
 
      #hon le na3mel local db eza ma ken mawjood
     with app.app_context():
@@ -49,4 +48,4 @@ def create_app():
     return app
 
 
->>>>>>> f2aaf76 (latest update)
+

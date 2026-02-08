@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 from flask_login import UserMixin
 from . import db
 
@@ -18,5 +16,20 @@ class User(db.Model, UserMixin):
     role = db.Column(db.String(255), nullable=True)
     choose_role = db.Column(db.Boolean,default=False,nullable=False)
 
->>>>>>> f2aaf76 (latest update)
+    
 
+class courses(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    id_users = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    course_name = db.Column(db.String(100), nullable=False)
+    course_description = db.Column(db.Text, nullable=False)
+    course_price = db.Column(db.Float, nullable=False)
+    course_image = db.Column(db.String(255), nullable=True)
+
+class instructor(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    id_users = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    course_name = db.Column(db.String(100), nullable=False)
+    course_description = db.Column(db.Text, nullable=False)
+    course_price = db.Column(db.Float, nullable=False)
+    course_image = db.Column(db.String(255), nullable=True)

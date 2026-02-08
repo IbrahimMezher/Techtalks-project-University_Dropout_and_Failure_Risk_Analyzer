@@ -1,7 +1,6 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-=======
+
+
 :root{
   --bg: #f7f9ff;
   --text:#0f172a;
@@ -89,8 +88,7 @@ a{ text-decoration:none; color:inherit; }
   padding:24px;
 }
 
-=======
->>>>>>> f4e47a3 (added a main.css that can be used in each new .html)
+
 .card{
   width: min(520px, 92vw);
 }
@@ -158,4 +156,4 @@ a{ text-decoration:none; color:inherit; }
 @media (max-width: 540px){
   .two-col{ grid-template-columns: 1fr; }
 }
->>>>>>> f2aaf76 (latest update)
+

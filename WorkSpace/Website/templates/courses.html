@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>My Courses</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+  <style>
+    /* small local overrides to ensure layout is clean if main.css doesn't cover these */
+    body { font-family: Arial, sans-serif; margin: 24px; color:#222; }
+    .header { display:flex; align-items:flex-start; gap:16px; }
+    .title { font-size:28px; font-weight:700; }
+    .subtitle { color:#666; margin-top:6px; }
+    .nav { display:flex; gap:12px; margin:18px 0 24px; }
+    .nav button { background:#f2f4f7; border:1px solid #e1e4e8; padding:8px 12px; border-radius:6px; cursor:pointer; }
+    .nav button.active { background:#0366d6; color:white; border-color:#0366d6; }
+    .panel { border:1px solid #e6e9ee; padding:16px; border-radius:8px; background:white; }
+    .row { display:flex; gap:12px; align-items:center; margin-bottom:12px; }
+    .list { display:flex; flex-direction:column; gap:8px; }
+    .course-item { display:flex; justify-content:space-between; align-items:center; padding:10px; border-radius:6px; border:1px solid #f0f0f0; background:#fafafa; }
+    .btn { padding:8px 10px; border-radius:6px; border:1px solid #cfcfcf; background:#fff; cursor:pointer; }
+    .btn.primary { background:#0366d6; color:white; border-color:#0366d6; }
+    .modal { position:fixed; left:0; top:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.35); }
+    .modal-card { background:white; padding:18px; border-radius:8px; width:420px; max-width:94%; }
+    label { display:block; font-size:13px; color:#444; margin-bottom:6px; }
+    input, select { width:100%; padding:8px; border:1px solid #ddd; border-radius:6px; margin-bottom:10px; }
+    .chart { margin-top:14px; height:140px; }
+    .muted { color:#777; font-size:13px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <div class="title">My Courses</div>
+      <div class="subtitle">Manage Your Courses</div>
+    </div>
+  </div>
+
+  <div class="nav" role="navigation" aria-label="Course sections">
+    <button id="nav-courses" class="active">Courses</button>
+    <button id="nav-attendance">Attendance</button>
+    <button id="nav-grades">Grades</button>
+  </div>
+
+  <div id="content">
+    <!-- Courses panel -->
+    <section id="panel-courses" class="panel">
+      <div class="row">
+        <div style="flex:1">
+          <strong>Enrolled courses</strong>
+          <div class="muted">Manage enrollments below</div>
+        </div>
+        <div>
+          <button id="open-enroll" class="btn primary">Enroll in a Course</button>
+        </div>
+      </div>
+
+      <div id="enrolled-list" class="list">
+        <!-- populated by courses.js -->
+      </div>
+    </section>
+
+    <!-- Attendance (placeholder) -->
+    <section id="panel-attendance" class="panel" style="display:none;">
+      <strong>Attendance</strong>
+      <div class="muted">Attendance tracking coming here. Select a course to view records.</div>
+      <div id="attendance-content" style="margin-top:12px;"></div>
+    </section>
+
+    <!-- Grades -->
+    <section id="panel-grades" class="panel" style="display:none;">
+      <div class="row">
+        <div style="flex:1">
+          <strong>Grades</strong>
+          <div class="muted">View and resolve grades for your courses</div>
+        </div>
+        <div>
+          <button id="open-resolve" class="btn primary">Resolve Grade</button>
+        </div>
+      </div>
+
+      <div id="grades-overview" class="panel" style="margin-top:12px;">
+        <canvas id="grades-chart" class="chart" width="800" height="140"></canvas>
+        <div id="grades-list" style="margin-top:12px;"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Enroll Modal -->
+  <div id="modal-enroll" class="modal" style="display:none;">
+    <div class="modal-card">
+      <h3>Enroll in a Course</h3>
+      <label for="enroll-name">Course Name</label>
+      <input id="enroll-name" placeholder="e.g., Calculus I" />
+      <label for="enroll-code">Course Code (optional)</label>
+      <input id="enroll-code" placeholder="e.g., MATH101" />
+      <div style="display:flex;gap:8px;">
+        <button id="save-enroll" class="btn primary" style="flex:1;">Enroll</button>
+        <button id="cancel-enroll" class="btn" style="flex:1;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Resolve Grade Modal -->
+  <div id="modal-resolve" class="modal" style="display:none;">
+    <div class="modal-card">
+      <h3>Resolve Grade</h3>
+      <label for="grade-course">Course</label>
+      <select id="grade-course">
+        <!-- populated from enrolled courses -->
+      </select>
+      <label for="grade-exam">Exam Name</label>
+      <input id="grade-exam" placeholder="e.g., Midterm 1" />
+      <label for="grade-score">Score (0-100)</label>
+      <input id="grade-score" type="number" min="0" max="100" />
+      <label for="grade-weight">Weight (%)</label>
+      <input id="grade-weight" type="number" min="0" max="100" />
+      <label for="grade-date">Test Date</label>
+      <input id="grade-date" type="date" />
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button id="save-grade" class="btn primary" style="flex:1;">Save Grade</button>
+        <button id="cancel-grade" class="btn" style="flex:1;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='courses.js') }}"></script>
+</body>
+</html>

@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-
-=======
 import re
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_user, logout_user, login_required,current_user
@@ -144,9 +141,6 @@ def reset_password_request():
         return redirect(url_for("auth.login"))
 
     return render_template("resetpassword.html")
-<<<<<<< HEAD
->>>>>>> ffbc0ce (test)
-=======
 
 
 @auth.route("/reset-password/<token>", methods=["GET", "POST"])
@@ -244,4 +238,4 @@ def resend_verify_email():
 
     flash("Verification code resent.", "success")
     return redirect(url_for("auth.verify_email", email=email))
->>>>>>> f2aaf76 (latest update)
+

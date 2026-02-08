@@ -12,7 +12,7 @@ SMTP_USER = os.getenv("SMTP_USER")
 SMTP_PASS = os.getenv("SMTP_PASS")             
 MAIL_FROM = os.getenv("MAIL_FROM", SMTP_USER)   
 
-APP_BASE_URL = os.getenv("APP_BASE_URL")
+APP_BASE_URL = os.getenv("APP_BASE_URL", "192.168.1.110:5000")
 
 
 def _require_env():
