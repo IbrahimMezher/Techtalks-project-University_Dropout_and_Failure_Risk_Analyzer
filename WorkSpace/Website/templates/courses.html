@@ -104,7 +104,7 @@
   <!-- Resolve Grade Modal -->
   <div id="modal-resolve" class="modal" style="display:none;">
     <div class="modal-card">
-      <h3>Resolve Grade</h3>
+      <h3 id="modal-resolve-title">Resolve Grade</h3>
       <label for="grade-course">Course</label>
       <select id="grade-course">
         <!-- populated from enrolled courses -->
@@ -117,6 +117,7 @@
       <input id="grade-weight" type="number" min="0" max="100" />
       <label for="grade-date">Test Date</label>
       <input id="grade-date" type="date" />
+      <input id="grade-id" type="hidden" />
       <div style="display:flex;gap:8px;margin-top:8px;">
         <button id="save-grade" class="btn primary" style="flex:1;">Save Grade</button>
         <button id="cancel-grade" class="btn" style="flex:1;">Cancel</button>

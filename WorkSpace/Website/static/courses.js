@@ -35,6 +35,7 @@
   const gradeDate = qs('#grade-date');
   const saveGrade = qs('#save-grade');
   const cancelGrade = qs('#cancel-grade');
+  const gradeIdHidden = qs('#grade-id');
   const gradesList = qs('#grades-list');
   const gradesChart = qs('#grades-chart');
 
@@ -48,6 +49,7 @@
   // initial
   let courses = load('courses');
   let grades = load('grades');
+  let editingGradeId = null;
 
   // nav handlers
   function setActive(tab){
@@ -110,10 +112,15 @@
   // resolve grade
   openResolve.addEventListener('click', ()=>{
     if(courses.length===0){ alert('No enrolled courses — enroll first.'); return; }
-    modalResolve.style.display='flex';
+    editingGradeId = null;
+    if(gradeIdHidden) gradeIdHidden.value = '';
+    document.getElementById('modal-resolve-title').textContent = 'Resolve Grade';
+    saveGrade.textContent = 'Save Grade';
+    clearGradeForm();
     renderGradeOptions();
+    modalResolve.style.display='flex';
   });
-  cancelGrade.addEventListener('click', ()=> { modalResolve.style.display='none'; clearGradeForm(); });
+  cancelGrade.addEventListener('click', ()=> { modalResolve.style.display='none'; clearGradeForm(); editingGradeId = null; if(gradeIdHidden) gradeIdHidden.value=''; document.getElementById('modal-resolve-title').textContent = 'Resolve Grade'; saveGrade.textContent = 'Save Grade'; });
 
   saveGrade.addEventListener('click', ()=>{
     const courseId = gradeCourse.value;
@@ -124,11 +131,23 @@
     if(!courseId){ alert('Select course'); return; }
     if(!exam){ alert('Enter exam name'); gradeExam.focus(); return; }
     if(Number.isNaN(score) || score<0 || score>100){ alert('Score must be 0-100'); gradeScore.focus(); return; }
-    const g = { id: uid(), courseId, exam, score, weight, date };
-    grades.push(g);
-    save('grades', grades);
+    if(editingGradeId){
+      const idx = grades.findIndex(x => x.id === editingGradeId);
+      if(idx !== -1){
+        grades[idx] = { id: editingGradeId, courseId, exam, score, weight, date };
+        save('grades', grades);
+      }
+    } else {
+      const g = { id: uid(), courseId, exam, score, weight, date };
+      grades.push(g);
+      save('grades', grades);
+    }
     modalResolve.style.display='none';
     clearGradeForm();
+    editingGradeId = null;
+    if(gradeIdHidden) gradeIdHidden.value = '';
+    document.getElementById('modal-resolve-title').textContent = 'Resolve Grade';
+    saveGrade.textContent = 'Save Grade';
     renderGrades();
   });
 
@@ -165,6 +184,28 @@
         row.style.display='flex'; row.style.justifyContent='space-between'; row.style.padding='6px 0'; row.style.borderBottom='1px solid #f0f0f0';
         row.innerHTML = `<div><div style="font-weight:600">${escapeHtml(g.exam)}</div><div class="muted">${g.date} • weight ${g.weight}%</div></div><div style="min-width:60px;text-align:right"><strong>${g.score}</strong>/100</div>`;
         ul.appendChild(row);
+        // add Edit button to allow correcting entered grades
+        try {
+          const rightDiv = row.querySelector('div:last-child');
+          const btnEdit = document.createElement('button');
+          btnEdit.className = 'btn';
+          btnEdit.style.marginLeft = '8px';
+          btnEdit.textContent = 'Edit';
+          btnEdit.addEventListener('click', () => {
+            editingGradeId = g.id;
+            if(gradeIdHidden) gradeIdHidden.value = g.id;
+            renderGradeOptions();
+            gradeCourse.value = g.courseId;
+            gradeExam.value = g.exam;
+            gradeScore.value = g.score;
+            gradeWeight.value = g.weight;
+            gradeDate.value = g.date;
+            document.getElementById('modal-resolve-title').textContent = 'Edit Grade';
+            saveGrade.textContent = 'Update Grade';
+            modalResolve.style.display = 'flex';
+          });
+          rightDiv.appendChild(btnEdit);
+        } catch(e){ /* ignore if DOM shape unexpected */ }
       });
       block.appendChild(ul);
       gradesList.appendChild(block);
