@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Courses – Risk Analyzer</title>
+
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="nav">
+    <div class="nav__inner">
+      <div class="brand">
+        <div class="brand__dot"></div>
+        Risk Analyzer
+        <span class="pill">Courses</span>
+      </div>
+
+      <a class="nav__link active" href="#">Courses</a>
+      <a class="nav__link" href="#">Dashboard</a>
+      <a class="nav__link" href="#">Students</a>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="header">
+      <div>
+        <h1 class="h1">Courses Page</h1>
+        <p class="subtitle">Enter indicators → get risk % + reasons.</p>
+      </div>
+
+      <div class="header__right">
+        <button class="btn btn--ghost" id="resetBtn">Reset</button>
+        <button class="btn" id="predictBtn">Predict Risk</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card__top">
+        <div>
+          <h2 class="h2">Input Data</h2>
+          <div class="card__meta">Backend must be running on localhost.</div>
+        </div>
+
+        <div class="chip chip--med">
+          <span class="dot dot--med"></span>
+          Free rules model
+        </div>
+      </div>
+
+      <div class="grid">
+        <div>
+          <div class="stat__label">Student ID (anonymized)</div>
+          <input id="studentId" placeholder="e.g., S1029" />
+        </div>
+
+        <div>
+          <div class="stat__label">Course Name</div>
+          <input id="courseName" placeholder="e.g., Calculus I" />
+        </div>
+
+        <div>
+          <div class="stat__label">Attendance (%)</div>
+          <input id="attendance" type="number" min="0" max="100" value="75" />
+        </div>
+
+        <div>
+          <div class="stat__label">Current Grade (%)</div>
+          <input id="grade" type="number" min="0" max="100" value="70" />
+        </div>
+
+        <div>
+          <div class="stat__label">Assignment Completion (%)</div>
+          <input id="assignments" type="number" min="0" max="100" value="65" />
+        </div>
+
+        <div>
+          <div class="stat__label">Course Difficulty</div>
+          <select id="difficulty">
+            <option value="1">Easy</option>
+            <option value="2" selected>Medium</option>
+            <option value="3">Hard</option>
+            <option value="4">Very Hard</option>
+          </select>
+        </div>
+
+        <div>
+          <div class="stat__label">Workload Shock</div>
+          <select id="workload">
+            <option value="0">No</option>
+            <option value="1" selected>Some</option>
+            <option value="2">High</option>
+          </select>
+        </div>
+
+        <div>
+          <div class="stat__label">Financial Pressure</div>
+          <select id="financial">
+            <option value="0">Low</option>
+            <option value="1" selected>Medium</option>
+            <option value="2">High</option>
+          </select>
+        </div>
+
+        <div>
+          <div class="stat__label">Recent Grade Drop?</div>
+          <select id="gradeDrop">
+            <option value="0" selected>No</option>
+            <option value="1">Yes</option>
+          </select>
+        </div>
+
+        <div>
+          <div class="stat__label">Alert Threshold (%)</div>
+          <input id="threshold" type="number" min="0" max="100" value="60" />
+        </div>
+
+        <div style="grid-column: span 2;">
+          <div class="footnote" id="status"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary" id="resultCard" style="display:none;">
+      <div class="summary__grid">
+        <div class="stat">
+          <div class="stat__label">Risk Score</div>
+          <div class="stat__value" id="riskValue">--%</div>
+          <div class="stat__hint" id="riskHint">—</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat__label">Risk Level</div>
+          <div class="stat__value" id="riskLevelChip">—</div>
+          <div class="stat__hint" id="riskLabel">—</div>
+        </div>
+
+        <div class="stat" style="grid-column: span 2;">
+          <div class="stat__label">Recommendation</div>
+          <div class="stat__value" style="font-size:16px;" id="alertMsg">—</div>
+          <div class="stat__hint">Goal: prevention & support, not surveillance.</div>
+        </div>
+      </div>
+
+      <div style="height:12px"></div>
+
+      <div class="grid">
+        <div class="card">
+          <h3 class="h2">Reasons</h3>
+          <ul class="reasons" id="reasonsList"></ul>
+        </div>
+
+        <div class="card">
+          <h3 class="h2">Notes</h3>
+          <div class="card__meta">
+            This is a free rule-based model (no training, no API cost).
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 class="h2">Tip</h3>
+          <div class="card__meta">
+            If results don’t show, check backend terminal for: <b>POST /predict 200</b>.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footnote">
+      Make sure backend is running at <b>http://127.0.0.1:8000</b>.
+    </div>
+  </div>
+
+
+  <script src="script.js"></script>
+</body>
+</html>

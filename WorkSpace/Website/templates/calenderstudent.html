@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Calendar – Risk Analyzer</title>
+
+
+  <link rel="stylesheet" href="calenderstudent.css" />
+
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+</head>
+
+<body>
+  <div class="nav">
+    <div class="nav__inner">
+      <div class="brand">
+        <div class="brand__dot"></div>
+        Risk Analyzer
+        <span class="pill">Calendar</span>
+      </div>
+
+      <a class="nav__link" href="index.html">Courses</a>
+      <a class="nav__link active" href="calendar.html">Calendar</a>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="header">
+      <div>
+        <h1 class="h1">Calendar</h1>
+        <p class="subtitle">Add schedules & exam times. Filter events by course.</p>
+      </div>
+      <div class="header__right">
+        <button class="btn btn--ghost" id="clearAllBtn">Clear All</button>
+        <button class="btn" id="seedCoursesBtn">Load Demo Courses</button>
+      </div>
+    </div>
+
+    <div class="layout">
+      <!-- CALENDAR -->
+      <div class="calendarWrap">
+        <div class="footnote" id="calendarStatus"></div>
+        <div id="calendar"></div>
+      </div>
+
+      
+      <div class="side">
+        <div class="chip chip--med">
+          <span class="dot dot--med"></span>
+          Filters & Add Event
+        </div>
+
+        <div class="field">
+          <label>Course filters (show/hide)</label>
+          <div class="courseList" id="courseList"></div>
+          <div class="tiny">Tip: uncheck a course to hide its events.</div>
+        </div>
+
+        <div class="field">
+          <label>Add / edit event</label>
+          <div class="tiny">Click on a day to set date quickly. Drag events to move. Resize to change duration.</div>
+        </div>
+
+        <div class="field">
+          <label>Course</label>
+          <select id="eventCourse"></select>
+        </div>
+
+        <div class="field">
+          <label>Title</label>
+          <input id="eventTitle" placeholder="e.g., Midterm Exam, Study Session, Lab" />
+        </div>
+
+        <div class="field">
+          <label>Type</label>
+          <select id="eventType">
+            <option value="schedule" selected>Schedule</option>
+            <option value="exam">Exam</option>
+            <option value="deadline">Deadline</option>
+            <option value="study">Study</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Start</label>
+          <input id="eventStart" type="datetime-local" />
+        </div>
+
+        <div class="field">
+          <label>End</label>
+          <input id="eventEnd" type="datetime-local" />
+        </div>
+
+        <div class="field">
+          <label>Notes (optional)</label>
+          <textarea id="eventNotes" placeholder="Room, topics, reminders..."></textarea>
+        </div>
+
+        <div class="btnRow">
+          <button class="btn" id="addUpdateBtn">Add Event</button>
+          <button class="btn btn--ghost" id="cancelEditBtn" style="display:none;">Cancel Edit</button>
+          <button class="btn danger" id="deleteBtn" style="display:none;">Delete</button>
+        </div>
+
+        <div class="footnote" id="formStatus"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="calenderstudent.js"></script>
+</body>
+</html>

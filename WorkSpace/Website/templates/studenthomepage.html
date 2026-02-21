@@ -1,126 +1,96 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Student Home</title>
-
-  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style8.css') }}">
+  <link rel="stylesheet" href="studenthomepage.css" />
 </head>
-
 <body>
-  <div class="bg-blob blob-1" aria-hidden="true"></div>
-  <div class="bg-blob blob-2" aria-hidden="true"></div>
-  <div class="bg-grid" aria-hidden="true"></div>
-
-  <header class="appbar">
-    <div class="appbar-inner">
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav__inner">
       <div class="brand">
-        <span class="brand-dot"></span>
-        <span class="brand-name">Dropout Analyzer</span>
+        <span class="brand__dot"></span>
+        Student Portal
       </div>
 
-      <nav class="nav">
-        <a class="nav-item active" href="#">Dashboard</a>
-        <a class="nav-item" href="#">Courses</a>
-        <a class="nav-item" href="#">Calendar</a>
-        <a class="nav-item" href="#">Settings</a>
-      </nav>
+      <a class="nav__link active" href="#dashboard">Dashboard</a>
+      <a class="nav__link" href="#courses">Courses <span class="pill" id="courseCountPill">0</span></a>
+      <a class="nav__link" href="#calendar">Calendar</a>
+      <a class="nav__link" href="#settings">Settings</a>
     </div>
-  </header>
+  </nav>
 
-  <main class="page">
-    <section class="page-head">
+  <main class="wrap" id="dashboard">
+    <header class="header">
       <div>
-        <h1 class="title">Student Dashboard</h1>
-        <p class="subtitle">Your courses, progress, and risk alerts in one place.</p>
+        <h1 class="h1">Welcome back, Student</h1>
+        <p class="subtitle">Your progress and AI risk alerts are shown below.</p>
       </div>
 
-      <div class="head-actions">
-        <button class="btn btn-ghost">Add Course</button>
-        <button class="btn btn-primary">Run Risk Scan</button>
+      <div class="header__right">
+        <button class="btn" id="refreshBtn" type="button">Refresh AI risk</button>
+      </div>
+    </header>
+
+    
+    <section class="summary" aria-label="Course summary">
+      <div class="summary__grid">
+        <div class="stat">
+          <div class="stat__label">Courses taken</div>
+          <div class="stat__value"><span id="statTotal">0</span></div>
+          <div class="stat__hint">Currently enrolled courses</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat__label">Low risk</div>
+          <div class="stat__value">
+            <span id="statLow">0</span>
+            <span class="chip chip--low"><span class="dot dot--low"></span>LOW</span>
+          </div>
+          <div class="stat__hint">On track</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat__label">Medium risk</div>
+          <div class="stat__value">
+            <span id="statMed">0</span>
+            <span class="chip chip--med"><span class="dot dot--med"></span>MED</span>
+          </div>
+          <div class="stat__hint">Needs attention</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat__label">High risk</div>
+          <div class="stat__value">
+            <span id="statHigh">0</span>
+            <span class="chip chip--high"><span class="dot dot--high"></span>HIGH</span>
+          </div>
+          <div class="stat__hint">At risk</div>
+        </div>
       </div>
     </section>
 
-    <section class="cards">
-      <div class="card metric">
-        <div class="metric-top">
-          <span class="k">Courses Taken</span>
-          <span class="pill-soft">This term</span>
-        </div>
-        <div class="metric-num">5</div>
-        <div class="metric-foot muted">You can add/remove courses anytime.</div>
-      </div>
 
-      <div class="card metric warn">
-        <div class="metric-top">
-          <span class="k">At Risk</span>
-          <span class="pill-warn">Medium</span>
-        </div>
-        <div class="metric-num">2</div>
-        <div class="metric-foot muted">Keep attendance & grades stable.</div>
-      </div>
+    <section class="dash">
+      <div class="dash__header">
+        <h2 class="h2">Courses Dashboard</h2>
 
-      <div class="card metric danger">
-        <div class="metric-top">
-          <span class="k">Critical</span>
-          <span class="pill-danger">High</span>
-        </div>
-        <div class="metric-num">1</div>
-        <div class="metric-foot muted">Consider quick intervention.</div>
-      </div>
-    </section>
-
-    <section class="card table-card">
-      <div class="table-head">
-        <div>
-          <h2>Courses Overview</h2>
-          <p class="muted">Example data (replace from backend later).</p>
-        </div>
-        <div class="table-actions">
-          <button class="btn btn-ghost">Sort</button>
-          <button class="btn btn-ghost">Filter</button>
+        <div class="filters" aria-label="Risk filters">
+          <button class="btn btn--ghost active" data-filter="all" type="button">All</button>
+          <button class="btn btn--ghost" data-filter="low" type="button">Low</button>
+          <button class="btn btn--ghost" data-filter="medium" type="button">Medium</button>
+          <button class="btn btn--ghost" data-filter="high" type="button">High</button>
         </div>
       </div>
 
-      <div class="table-wrap">
-        <table class="tbl">
-          <thead>
-            <tr>
-              <th>Course</th>
-              <th>Attendance</th>
-              <th>Grade</th>
-              <th>Difficulty</th>
-              <th>Risk</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Algorithms</strong></td>
-              <td>76%</td>
-              <td>68%</td>
-              <td>High</td>
-              <td><span class="risk med">Medium</span></td>
-            </tr>
-            <tr>
-              <td><strong>Databases</strong></td>
-              <td>91%</td>
-              <td>84%</td>
-              <td>Medium</td>
-              <td><span class="risk low">Low</span></td>
-            </tr>
-            <tr>
-              <td><strong>Physics</strong></td>
-              <td>52%</td>
-              <td>55%</td>
-              <td>High</td>
-              <td><span class="risk high">High</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <div class="grid" id="courseGrid" aria-label="Course cards"></div>
+
+      <p class="footnote" id="aiStatus">AI status: ready</p>
     </section>
   </main>
+
+  <script src="studenthomepage.js"></script>
 </body>
 </html>
