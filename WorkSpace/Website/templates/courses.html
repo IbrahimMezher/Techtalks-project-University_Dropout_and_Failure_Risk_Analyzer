@@ -8,24 +8,46 @@
   <style>
     /* small local overrides to ensure layout is clean if main.css doesn't cover these */
     body { font-family: Arial, sans-serif; margin: 24px; color:#222; }
+    /* subtle material-like background */
+    body { background: linear-gradient(180deg, #f7f9fb 0%, #ffffff 100%); }
     .header { display:flex; align-items:flex-start; gap:16px; }
     .title { font-size:28px; font-weight:700; }
     .subtitle { color:#666; margin-top:6px; }
     .nav { display:flex; gap:12px; margin:18px 0 24px; }
-    .nav button { background:#f2f4f7; border:1px solid #e1e4e8; padding:8px 12px; border-radius:6px; cursor:pointer; }
+    .nav button { background:#f2f4f7; border:1px solid #e1e4e8; padding:8px 12px; border-radius:6px; cursor:pointer; transition: all .18s ease; }
     .nav button.active { background:#0366d6; color:white; border-color:#0366d6; }
+    .nav button:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(3,102,214,0.06); }
     .panel { border:1px solid #e6e9ee; padding:16px; border-radius:8px; background:white; }
     .row { display:flex; gap:12px; align-items:center; margin-bottom:12px; }
     .list { display:flex; flex-direction:column; gap:8px; }
-    .course-item { display:flex; justify-content:space-between; align-items:center; padding:10px; border-radius:6px; border:1px solid #f0f0f0; background:#fafafa; }
+    .course-item { display:flex; justify-content:space-between; align-items:center; padding:12px; border-radius:8px; border:1px solid #f0f0f0; background:#fff; transition: transform .16s ease, box-shadow .16s ease; box-shadow: 0 1px 0 rgba(16,24,40,0.02); }
+    .course-item:hover { transform: translateY(-6px); box-shadow: 0 8px 20px rgba(16,24,40,0.08); }
     .btn { padding:8px 10px; border-radius:6px; border:1px solid #cfcfcf; background:#fff; cursor:pointer; }
     .btn.primary { background:#0366d6; color:white; border-color:#0366d6; }
+    .btn { transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease; }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(3,102,214,0.06); }
     .modal { position:fixed; left:0; top:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.35); }
-    .modal-card { background:white; padding:18px; border-radius:8px; width:420px; max-width:94%; }
+    .modal-card { background:white; padding:18px; border-radius:10px; width:420px; max-width:94%; box-shadow: 0 12px 40px rgba(2,6,23,0.12); transform-origin: center; animation: pop .18s ease; }
+    @keyframes pop { from { transform: scale(.98); opacity: .0 } to { transform: scale(1); opacity: 1 } }
     label { display:block; font-size:13px; color:#444; margin-bottom:6px; }
     input, select { width:100%; padding:8px; border:1px solid #ddd; border-radius:6px; margin-bottom:10px; }
     .chart { margin-top:14px; height:140px; }
     .muted { color:#777; font-size:13px; }
+
+    /* fade-in upward for list items */
+    .fade-in-up { opacity:0; transform: translateY(8px); animation: fadeUp .36s ease forwards; }
+    @keyframes fadeUp { to { opacity:1; transform: translateY(0); } }
+
+    /* stats grid */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+    .stat-card { background: linear-gradient(135deg, #f5f7fa 0%, #fff 100%); border: 1px solid #e1e8ed; border-radius: 8px; padding: 14px; box-shadow: 0 2px 8px rgba(16,24,40,0.04); transition: transform .18s ease, box-shadow .18s ease; }
+    .stat-card:hover { transform: translateY(-4px); box-shadow: 0 6px 16px rgba(16,24,40,0.09); }
+    .stat-label { font-size: 12px; color: #666; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+    .stat-value { font-size: 28px; font-weight: 700; color: #0366d6; }
+    .stat-sublabel { font-size: 11px; color: #999; margin-top: 4px; }
+
+    /* small responsive tweaks */
+    @media (max-width:640px){ .modal-card{ width:94%; } .chart{ height:120px; } }
   </style>
 </head>
 <body>
