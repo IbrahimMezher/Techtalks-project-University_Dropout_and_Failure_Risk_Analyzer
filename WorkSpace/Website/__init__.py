@@ -1,8 +1,10 @@
 from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
+import os
+from dotenv import load_dotenv
 
-
+load_dotenv()
 
 
 db = SQLAlchemy()
@@ -10,7 +12,7 @@ db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = "FEWHUWFHUBCDFSGWWQM93648F"
+    app.config['SECRET_KEY'] = "NNVKKMMKDjsjdnnxznakjwhdhdn"
     #hek 3arafna local db bas nent2el la mar7ale akbar se3eta ba3mlo URL
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False

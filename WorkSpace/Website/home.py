@@ -73,3 +73,18 @@ def choose():
        return redirect(url_for("views.home"))
     return render_template("choose_role.html")
     
+
+@views.route('/courses')
+@login_required
+def courses():
+    return render_template("courses.html")
+
+@views.route('/settings')
+@login_required
+def settings():
+    return render_template("settings.html")
+
+@views.route('/calender')
+@login_required
+def calender():
+   return render_template("calender.html")
