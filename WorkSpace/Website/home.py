@@ -88,3 +88,4 @@ def settings():
 @login_required
 def calender():
    return render_template("calender.html")
+
