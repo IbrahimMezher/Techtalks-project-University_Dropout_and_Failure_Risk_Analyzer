@@ -41,10 +41,11 @@ def create_app():
 
     from .home import views
     from .auth import auth
-
+    from .student import student_views
+    
     app.register_blueprint(views, url_prefix="/")
     app.register_blueprint(auth, url_prefix="/")
-
+    app.register_blueprint(student_views, url_prefix="/")
      #hon le na3mel local db eza ma ken mawjood
     with app.app_context():
         db.create_all()

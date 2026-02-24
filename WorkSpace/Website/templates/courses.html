@@ -6,63 +6,17 @@
   <title>My Courses</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
   <style>
-   
-    .header { display:flex; align-items:flex-start; gap:16px; }
-    .title { font-size:28px; font-weight:700; }
-    .subtitle { color:#666; margin-top:6px; }
-    .nav { display:flex; gap:12px; margin:18px 0 24px; }
-    .nav button { background:#f2f4f7; border:1px solid #e1e4e8; padding:8px 12px; border-radius:6px; cursor:pointer; transition: all .18s ease; }
-   .btn.active {
-  background: linear-gradient(135deg, var(--primary), #7c3aed);
-  color: white;
-  border-color: transparent;
-}
-    .nav button:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(3,102,214,0.06); }
-    .panel { border:1px solid #e6e9ee; padding:16px; border-radius:8px; background:white; }
-    .row { display:flex; gap:12px; align-items:center; margin-bottom:12px; }
+    .panel { border:1px solid var(--line); padding:16px; border-radius:18px; background:var(--glass); backdrop-filter:blur(10px); margin-bottom: 24px;}
+    .row { display:flex; gap:12px; align-items:center; margin-bottom:12px; justify-content: space-between; }
     .list { display:flex; flex-direction:column; gap:8px; }
-    .course-item {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:16px;
-  border-radius:18px;
-  background: var(--glass);
-  border:1px solid var(--line);
-  backdrop-filter: blur(10px);
-  transition: all .2s ease;
-}
-
-.course-item:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--shadow);
-}
-    .btn { padding:8px 10px; border-radius:6px; border:1px solid #cfcfcf; background:#fff; cursor:pointer; }
-    .btn.primary { background:#0366d6; color:white; border-color:#0366d6; }
-    .btn { transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease; }
-    .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(3,102,214,0.06); }
-    .modal { position:fixed; left:0; top:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.35); }
-    .modal-card { background:white; padding:18px; border-radius:10px; width:420px; max-width:94%; box-shadow: 0 12px 40px rgba(2,6,23,0.12); transform-origin: center; animation: pop .18s ease; }
-    @keyframes pop { from { transform: scale(.98); opacity: .0 } to { transform: scale(1); opacity: 1 } }
-    label { display:block; font-size:13px; color:#444; margin-bottom:6px; }
-    input, select { width:100%; padding:8px; border:1px solid #ddd; border-radius:6px; margin-bottom:10px; }
-    .chart { margin-top:14px; height:140px; }
-    .muted { color:#777; font-size:13px; }
-
-    /* fade-in upward for list items */
+    .course-item { display:flex; justify-content:space-between; align-items:center; padding:16px; border-radius:18px; background: rgba(255,255,255,0.8); border:1px solid var(--line); transition: all .2s ease; }
+    .course-item:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+    .modal { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.4); backdrop-filter:blur(4px); z-index: 999; }
+    .modal-card { background:white; padding:24px; border-radius:18px; width:420px; max-width:94%; box-shadow: var(--shadow); animation: popIn .2s ease; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+    .stat-card { background: linear-gradient(135deg, #f8fafc 0%, #fff 100%); border: 1px solid var(--line); border-radius: 14px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     .fade-in-up { opacity:0; transform: translateY(8px); animation: fadeUp .36s ease forwards; }
     @keyframes fadeUp { to { opacity:1; transform: translateY(0); } }
-
-    /* stats grid */
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
-    .stat-card { background: linear-gradient(135deg, #f5f7fa 0%, #fff 100%); border: 1px solid #e1e8ed; border-radius: 8px; padding: 14px; box-shadow: 0 2px 8px rgba(16,24,40,0.04); transition: transform .18s ease, box-shadow .18s ease; }
-    .stat-card:hover { transform: translateY(-4px); box-shadow: 0 6px 16px rgba(16,24,40,0.09); }
-    .stat-label { font-size: 12px; color: #666; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-    .stat-value { font-size: 28px; font-weight: 700; color: #0366d6; }
-    .stat-sublabel { font-size: 11px; color: #999; margin-top: 4px; }
-
-    /* small responsive tweaks */
-    @media (max-width:640px){ .modal-card{ width:94%; } .chart{ height:120px; } }
   </style>
 </head>
 <body>
@@ -70,142 +24,212 @@
   <div class="bg-blob blob-1"></div>
   <div class="bg-blob blob-2"></div>
 
-  <div style="max-width:1100px; margin:60px auto; padding:0 24px;">
-  <div class="card" style="margin-bottom:24px;">
-  <div class="card-header">
-    <div class="brandline">
-      <div class="brand-dot"></div>
-      <div class="brand-name">Dropout Analyzer</div>
+  <header class="appbar">
+    <div class="appbar-inner">
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <span class="brand-name">Dropout Analyzer</span>
+      </div>
+      <nav class="nav">
+        <a class="nav-item" href="{{url_for('student_views.dashboard')}}">Dashboard</a>
+        <a class="nav-item active" href="{{url_for('student_views.courses')}}">Courses</a>
+        <a class="nav-item" href="{{url_for('student_views.calender')}}">Calendar</a>
+        <a class="nav-item" href="{{url_for('student_views.settings')}}">Settings</a>
+      </nav>
     </div>
-    <h1>My Courses</h1>
-    <p class="subtext">Manage your courses, attendance, and grades.</p>
-  </div>
-</div>
+  </header>
 
-  <div class="card" style="margin-bottom:24px;">
-  <div style="display:flex; gap:12px;">
-    <button id="nav-courses" class="btn btn-ghost active">Courses</button>
-    <button id="nav-attendance" class="btn btn-ghost">Attendance</button>
-    <button id="nav-grades" class="btn btn-ghost">Grades</button>
-  </div>
-</div>
-
-  <div id="content">
-    <!-- Courses panel -->
-    <section id="panel-courses" class="card">
-      <div class="row">
-        <div style="flex:1">
-          <strong>Enrolled courses</strong>
-          <div class="muted">Manage enrollments below</div>
-        </div>
-        <div>
-          <button id="open-enroll" class="btn primary">Enroll in a Course</button>
-        </div>
+  <div style="max-width:1100px; margin:40px auto; padding:0 24px;">
+    
+    <div class="card" style="margin-bottom:24px;">
+      <div class="card-header" style="margin:0;">
+        <h1>My Courses</h1>
+        <p class="subtext">Manage your enrollments, attendance, and grades.</p>
       </div>
+    </div>
 
-      <div id="enrolled-list" class="list">
-        <!-- populated by courses.js -->
+    <div class="card" style="margin-bottom:24px;">
+      <div style="display:flex; gap:12px;">
+        <button id="nav-courses" class="btn btn-ghost active">Courses</button>
+        <button id="nav-attendance" class="btn btn-ghost">Attendance</button>
+        <button id="nav-grades" class="btn btn-ghost">Grades</button>
       </div>
-    </section>
+    </div>
 
-    <!-- Attendance -->
-    <section id="panel-attendance" class="panel" style="display:none;">
-      <div class="row">
-        <div style="flex:1">
-          <strong>Attendance</strong>
-          <div class="muted">Track your attendance across courses</div>
+    <div id="content">
+      <section id="panel-courses" class="panel">
+        <div class="row">
+          <div>
+            <strong>Enrolled courses</strong>
+            <div class="muted">Manage enrollments below</div>
+          </div>
+          <button id="open-enroll" class="btn btn-primary">Enroll in a Course</button>
         </div>
-        <div>
-          <button id="open-attendance" class="btn primary">Resolve Attendance</button>
+        
+        <div id="enrolled-list" class="list">
+          {% if enrollments %}
+            {% for e in enrollments %}
+              <div class="course-item fade-in-up">
+                <div>
+                  <h3 style="margin:0 0 4px 0; font-size:18px;">{{ e.course.course_name }}</h3>
+                  <p class="muted" style="margin:0; font-size:14px;">
+                    Code: {{ e.course.course_code }} &bull; Attendance: {{ "%.1f"|format(e.attendance_rate) }}% &bull; Grade: {{ "%.1f"|format(e.current_grade) }}%
+                  </p>
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <p class="muted" style="padding: 20px 0;">You have not enrolled in any courses yet.</p>
+          {% endif %}
         </div>
-      </div>
+      </section>
 
-      <div id="attendance-chart-container" style="margin-top:16px;">
-        <canvas id="attendance-chart" width="400" height="300"></canvas>
-      </div>
-      <div id="attendance-summary" style="margin-top:16px;"></div>
-    </section>
-
-    <!-- Grades -->
-    <section id="panel-grades" class="panel" style="display:none;">
-      <div class="row">
-        <div style="flex:1">
-          <strong>Grades</strong>
-          <div class="muted">View and resolve grades for your courses</div>
+      <section id="panel-attendance" class="panel" style="display:none;">
+        <div class="row">
+          <div>
+            <strong>Attendance Tracker</strong>
+            <div class="muted">Track your attendance across courses</div>
+          </div>
+          <button id="open-attendance" class="btn btn-primary">Add Attendance</button>
         </div>
-        <div>
-          <button id="open-resolve" class="btn primary">Resolve Grade</button>
+        
+        <div id="attendance-summary" style="margin-top:16px;">
+          {% for e in enrollments %}
+            <h3 style="margin-top: 24px; border-bottom: 1px solid var(--border-line); padding-bottom: 8px;">{{ e.course.course_name }} ({{ "%.1f"|format(e.attendance_rate) }}%)</h3>
+            <div class="list" style="margin-top: 12px;">
+              {% for a in e.attendance_records %}
+                <div class="course-item" style="padding: 12px 16px;">
+                  <span style="font-weight: 600;">{{ a.date.strftime('%B %d, %Y') }}</span>
+                  <span class="status-badge {% if a.status == 'present' %}status-good{% else %}status-danger{% endif %}">
+                    {{ a.status | capitalize }}
+                  </span>
+                </div>
+              {% else %}
+                <p class="muted" style="font-size: 13px;">No attendance recorded for this course.</p>
+              {% endfor %}
+            </div>
+          {% endfor %}
         </div>
-      </div>
+      </section>
 
-      <div id="grades-overview" class="panel" style="margin-top:12px;">
-        <canvas id="grades-chart" class="chart" width="800" height="140"></canvas>
-        <div id="grades-list" style="margin-top:12px;"></div>
-      </div>
-    </section>
-  </div>
+      <section id="panel-grades" class="panel" style="display:none;">
+        <div class="row">
+          <div>
+            <strong>Grade Book</strong>
+            <div class="muted">View and resolve grades for your courses</div>
+          </div>
+          <button id="open-resolve" class="btn btn-primary">Add Grade</button>
+        </div>
+        
+        <div id="grades-list" style="margin-top:24px;">
+          {% for e in enrollments %}
+            <h3 style="margin-top: 24px; border-bottom: 1px solid var(--border-line); padding-bottom: 8px;">{{ e.course.course_name }} (Current Avg: {{ "%.1f"|format(e.current_grade) }}%)</h3>
+            <div class="list" style="margin-top: 12px;">
+              {% for g in e.grades %}
+                <div class="course-item" style="padding: 12px 16px;">
+                  <div>
+                    <strong style="display: block; margin-bottom: 4px;">{{ g.exam_name }}</strong>
+                    <span class="muted" style="font-size: 13px;">Date: {{ g.date_recorded.strftime('%Y-%m-%d') }} &bull; Weight: {{ g.weight }}%</span>
+                  </div>
+                  <div style="font-size: 18px; font-weight: 800; color: var(--primary);">
+                    {{ g.score }} / 100
+                  </div>
+                </div>
+              {% else %}
+                <p class="muted" style="font-size: 13px;">No grades recorded for this course.</p>
+              {% endfor %}
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+    </div>
 
-  <!-- Enroll Modal -->
   <div id="modal-enroll" class="modal" style="display:none;">
-    <div class="modal-card">
+    <form class="modal-card form" action="{{ url_for('student_views.enroll') }}" method="POST">
       <h3>Enroll in a Course</h3>
-      <label for="enroll-name">Course Name</label>
-      <input id="enroll-name" placeholder="e.g., Calculus I" />
-      <label for="enroll-code">Course Code (optional)</label>
-      <input id="enroll-code" placeholder="e.g., MATH101" />
-      <div style="display:flex;gap:8px;">
-        <button id="save-enroll" class="btn primary" style="flex:1;">Enroll</button>
-        <button id="cancel-enroll" class="btn" style="flex:1;">Cancel</button>
+      <div class="field">
+        <label>Course Name</label>
+        <input name="course_name" type="text" placeholder="e.g., Calculus I" required />
       </div>
-    </div>
+      <div class="field">
+        <label>Course Code</label>
+        <input name="course_code" type="text" placeholder="e.g., MATH101" required />
+      </div>
+      <div style="display:flex; gap:8px; margin-top:16px;">
+        <button type="submit" class="btn btn-primary" style="flex:1;">Enroll</button>
+        <button type="button" class="btn btn-ghost" style="flex:1;" onclick="document.getElementById('modal-enroll').style.display='none'">Cancel</button>
+      </div>
+    </form>
   </div>
 
-  <!-- Resolve Grade Modal -->
   <div id="modal-resolve" class="modal" style="display:none;">
-    <div class="modal-card">
+    <form class="modal-card form" action="{{ url_for('student_views.add_grade') }}" method="POST">
       <h3 id="modal-resolve-title">Resolve Grade</h3>
-      <label for="grade-course">Course</label>
-      <select id="grade-course">
-        <!-- populated from enrolled courses -->
-      </select>
-      <label for="grade-exam">Exam Name</label>
-      <input id="grade-exam" placeholder="e.g., Midterm 1" />
-      <label for="grade-score">Score (0-100)</label>
-      <input id="grade-score" type="number" min="0" max="100" />
-      <label for="grade-weight">Weight (%)</label>
-      <input id="grade-weight" type="number" min="0" max="100" />
-      <label for="grade-date">Test Date</label>
-      <input id="grade-date" type="date" />
-      <input id="grade-id" type="hidden" />
-      <div style="display:flex;gap:8px;margin-top:8px;">
-        <button id="save-grade" class="btn primary" style="flex:1;">Save Grade</button>
-        <button id="cancel-grade" class="btn" style="flex:1;">Cancel</button>
+      <div class="field">
+        <label>Course</label>
+        <select name="enrollment_id" required>
+          <option value="" disabled selected>Select a Course</option>
+          {% for e in enrollments %}
+            <option value="{{ e.id }}">{{ e.course.course_name }}</option>
+          {% endfor %}
+        </select>
       </div>
-    </div>
+      <div class="field">
+        <label>Exam Name</label>
+        <input name="exam_name" type="text" placeholder="e.g., Midterm 1" required />
+      </div>
+      <div style="display:flex; gap:12px;">
+        <div class="field" style="flex:1;">
+          <label>Score (0-100)</label>
+          <input name="score" type="number" min="0" max="100" step="0.1" required />
+        </div>
+        <div class="field" style="flex:1;">
+          <label>Weight (%)</label>
+          <input name="weight" type="number" min="0" max="100" step="0.1" required />
+        </div>
+      </div>
+      <div class="field">
+        <label>Test Date</label>
+        <input name="date" type="date" required />
+      </div>
+      <div style="display:flex; gap:8px; margin-top:16px;">
+        <button type="submit" class="btn btn-primary" style="flex:1;">Save Grade</button>
+        <button type="button" class="btn btn-ghost" style="flex:1;" onclick="document.getElementById('modal-resolve').style.display='none'">Cancel</button>
+      </div>
+    </form>
   </div>
 
-  <!-- Resolve Attendance Modal -->
   <div id="modal-attendance" class="modal" style="display:none;">
-    <div class="modal-card">
+    <form class="modal-card form" action="{{ url_for('student_views.add_attendance') }}" method="POST">
       <h3>Resolve Attendance</h3>
-      <label for="attendance-course">Course Name</label>
-      <select id="attendance-course">
-        <!-- populated from enrolled courses -->
-      </select>
-      <label for="attendance-date">Attendance Date</label>
-      <input id="attendance-date" type="date" />
-      <label for="attendance-status">Status</label>
-      <select id="attendance-status">
-        <option value="present">Present</option>
-        <option value="absent">Absent</option>
-      </select>
-      <div style="display:flex;gap:8px;margin-top:12px;">
-        <button id="save-attendance" class="btn primary" style="flex:1;">Save</button>
-        <button id="cancel-attendance" class="btn" style="flex:1;">Cancel</button>
+      <div class="field">
+        <label>Course Name</label>
+        <select name="enrollment_id" required>
+          <option value="" disabled selected>Select a Course</option>
+          {% for e in enrollments %}
+            <option value="{{ e.id }}">{{ e.course.course_name }}</option>
+          {% endfor %}
+        </select>
       </div>
-    </div>
+      <div class="field">
+        <label>Attendance Date</label>
+        <input name="date" type="date" required />
+      </div>
+      <div class="field">
+        <label>Status</label>
+        <select name="status" required>
+          <option value="present">Present</option>
+          <option value="absent">Absent</option>
+        </select>
+      </div>
+      <div style="display:flex; gap:8px; margin-top:16px;">
+        <button type="submit" class="btn btn-primary" style="flex:1;">Save</button>
+        <button type="button" class="btn btn-ghost" style="flex:1;" onclick="document.getElementById('modal-attendance').style.display='none'">Cancel</button>
+      </div>
+    </form>
   </div>
-</div>
+  
+
   <script src="{{ url_for('static', filename='main.js') }}"></script>
 </body>
 </html>
