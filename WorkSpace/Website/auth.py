@@ -23,14 +23,12 @@ def _make_otp():
 # min el esem el ases la na3mel otp(one time pass ex:000765)
 
 
-def issue_email_otp(user, minutes=15):
+def issue_email_otp(user, minutes=15, to_email=None):
     otp = _make_otp()
     user.email_otp_hash = generate_password_hash(otp)
-    # lezem dayman nkoon hateen time limit
     user.email_otp_expires_at = datetime.utcnow() + timedelta(minutes=minutes)
     db.session.commit()
-    send_verify_otp(user.email, otp, minutes_valid=minutes)
-
+    send_verify_otp(to_email or user.email, otp, minutes_valid=minutes)
 
 def check_email_otp(user, otp_input: str) -> bool:
     # hek esmon bil db w hay is used ex otp 8alat aw expirey mara2 aw eza sa7 w akid eza raja3 true ya3ne meshe hala
@@ -64,6 +62,10 @@ def login():
             return redirect(url_for("auth.verify_email", email=user.email))
         #flask login b2alba hay built in
         login_user(user,remember=remember)
+        from flask import session
+        pending = session.pop("pending_invite_token", None)
+        if pending:
+         return redirect(url_for("instructor.accept_invite", token=pending))
         if not user.choose_role or not user.role:
          return redirect(url_for("views.choose"))
         
@@ -238,3 +240,98 @@ def resend_verify_email():
 
     flash("Verification code resent.", "success")
     return redirect(url_for("auth.verify_email", email=email))
+
+@auth.route("/change-email/request", methods=["POST"])
+@login_required
+def change_email_request():
+    new_email = (request.form.get("new_email") or "").strip().lower()
+    password = request.form.get("password", "")
+
+    if not new_email:
+        flash("Please enter a new email.", "error")
+        return redirect(request.referrer or url_for("views.home"))
+    
+    if not check_password_hash(current_user.password, password):
+        flash("Password is incorrect.", "error")
+        return redirect(request.referrer or url_for("views.home"))
+
+    if new_email == (current_user.email or "").lower():
+        flash("That is already your current email.", "error")
+        return redirect(request.referrer or url_for("views.home"))
+
+    existing = User.query.filter_by(email=new_email).first()
+    if existing:
+        flash("This email is already in use.", "error")
+        return redirect(request.referrer or url_for("views.home"))
+
+
+    current_user.pending_email = new_email
+    db.session.commit()
+
+    issue_email_otp(current_user, minutes=15, to_email=new_email)
+
+    flash("We sent a verification code to your new email.", "success")
+    return redirect(url_for("auth.change_email_verify"))
+
+
+@auth.route("/change-email/verify", methods=["GET", "POST"])
+@login_required
+def change_email_verify():
+    if not current_user.pending_email:
+        flash("No email change requested.", "error")
+        return redirect(url_for("views.home"))
+
+    if request.method == "POST":
+        code = (request.form.get("code") or "").strip()
+
+        if not check_email_otp(current_user, code):
+            flash("Invalid or expired code.", "error")
+            return render_template("change_email_verify.html", pending_email=current_user.pending_email)
+
+        current_user.email = current_user.pending_email
+        current_user.pending_email = None
+
+        current_user.email_verified = True
+        current_user.email_verified_at = datetime.utcnow()
+        current_user.email_otp_hash = None
+        current_user.email_otp_expires_at = None
+
+        db.session.commit()
+        flash("Email changed successfully!", "success")
+        if current_user.role == "instructor":
+             return redirect(url_for("instructor.settings", tab="security"))
+        elif current_user.role == "student":
+            return redirect(url_for("student_views.settings", tab="security"))
+        return redirect(url_for("views.home"))
+
+    return render_template("change_email_verify.html", pending_email=current_user.pending_email)
+
+@auth.route("/change-password", methods=["POST"])
+@login_required
+def change_password():
+    current_pw = request.form.get("current_password", "")
+    new_pw1 = request.form.get("new_password1", "")
+    new_pw2 = request.form.get("new_password2", "")
+
+    if not check_password_hash(current_user.password, current_pw):
+        flash("Current password is incorrect.", "error")
+        return redirect(request.referrer or url_for("views.home"))
+
+    if new_pw1 != new_pw2:
+        flash("New passwords don't match.", "error")
+        return redirect(request.referrer or url_for("views.home"))
+    
+    if len(new_pw1) < 8 or not re.search(r"[A-Z]", new_pw1) or not re.search(r"[!@#$%^&*(),.?\/-_:{}<>]", new_pw1):
+        flash("Password should be >7, include 1 uppercase, and 1 special character.", "error")
+        return redirect(request.referrer or url_for("views.home"))
+
+    current_user.password = generate_password_hash(new_pw1)
+    db.session.commit()
+
+    flash("Password updated successfully!", "success")
+    if getattr(current_user, "role", None) == "instructor":
+     return redirect(url_for("instructor.settings", tab="security"))
+    return redirect(url_for("student_views.settings", tab="security"))
+
+
+

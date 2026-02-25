@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Invitation</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+  <style>
+    .page{ min-height:100vh; display:grid; place-items:center; padding:24px; }
+    .meta{ margin-top:10px; color: var(--muted); font-weight:750; }
+    .ok{ color: var(--success); font-weight:950; }
+    .bad{ color: var(--danger); font-weight:950; }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="bg-blob blob-1"></div>
+  <div class="bg-blob blob-2"></div>
+
+  <main class="page">
+    <div class="card" style="max-width:560px; width:100%;">
+      <div class="card-header">
+        <h1>{{ title }}</h1>
+        <p class="subtext">
+          {% if ok %}
+            <span class="ok">Success</span>
+          {% else %}
+            <span class="bad">Action needed</span>
+          {% endif %}
+        </p>
+      </div>
+
+      <p style="margin:0; font-weight:750;">{{ message }}</p>
+
+      {% if ok %}
+        <div class="meta">
+          {% if instructor_name %}
+            Added to instructor: <strong>{{ instructor_name }}</strong><br>
+          {% endif %}
+          {% if course_name %}
+            Course: <strong>{{ course_name }}</strong>
+          {% else %}
+            Course: <strong>Not assigned yet</strong>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      <div style="display:flex; gap:10px; margin-top:16px; flex-wrap:wrap;">
+        {% if current_user.is_authenticated %}
+          {% if current_user.role == "instructor" %}
+            <a class="btn btn-primary" href="{{ url_for('instructor.instructor_log') }}">Continue</a>
+          {% elif current_user.role == "student" %}
+            <a class="btn btn-primary" href="{{ url_for('student_views.settings') }}">Continue</a>
+          {% else %}
+            <a class="btn btn-primary" href="{{ url_for('views.home') }}">Continue</a>
+          {% endif %}
+        {% else %}
+          <a class="btn btn-primary" href="{{ url_for('auth.login') }}">Log in</a>
+          <a class="btn btn-ghost" href="{{ url_for('auth.signup') }}">Create account</a>
+        {% endif %}
+      </div>
+    </div>
+  </main>
+</body>
+</html>

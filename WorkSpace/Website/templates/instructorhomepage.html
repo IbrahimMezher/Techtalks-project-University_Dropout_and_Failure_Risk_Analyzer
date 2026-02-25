@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="{{ current_user.theme_preference or 'light' }}">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Instructor Home</title>
+  <title>Instructor Dashboard</title>
 
   <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='style9.css') }}">
@@ -15,31 +15,31 @@
   <div class="bg-grid" aria-hidden="true"></div>
 
   <header class="appbar">
-    <div class="appbar-inner">
-      <div class="brand">
-        <span class="brand-dot"></span>
-        <span class="brand-name">Dropout Analyzer</span>
-      </div>
-
-      <nav class="nav">
-        <a class="nav-item active" href="#">Dashboard</a>
-        <a class="nav-item" href="#">Students</a>
-        <a class="nav-item" href="#">Reports</a>
-        <a class="nav-item" href="#">Settings</a>
-      </nav>
+  <div class="appbar-inner">
+    <div class="brand">
+      <span class="brand-dot"></span>
+      <span class="brand-name">Dropout Analyzer</span>
     </div>
-  </header>
+
+    <nav class="nav">
+      <a class="nav-item {% if active_page=='dashboard' %}active{% endif %}" href="{{ url_for('instructor.instructor_log') }}">Dashboard</a>
+      <a class="nav-item {% if active_page=='students' %}active{% endif %}" href="{{ url_for('instructor.ins_students') }}">Students</a>
+      <a class="nav-item {% if active_page=='reports' %}active{% endif %}" href="{{ url_for('instructor.reports') }}">Reports</a>
+      <a class="nav-item {% if active_page=='settings' %}active{% endif %}" href="{{ url_for('instructor.settings') }}">Settings</a>
+    </nav>
+  </div>
+</header>
 
   <main class="page">
     <section class="page-head">
       <div>
         <h1 class="title">Instructor Dashboard</h1>
-        <p class="subtitle">Review risk levels, track students, and take action early.</p>
+        <p class="subtitle">Early indicators from attendance + grades (support, not surveillance).</p>
       </div>
 
       <div class="head-actions">
-        <button class="btn btn-ghost">Export Report</button>
-        <button class="btn btn-primary">Create Alert</button>
+        <a class="btn btn-ghost" href="{{ url_for('instructor.reports') }}">Open Reports</a>
+        <a class="btn btn-primary" href="{{ url_for('instructor.ins_students') }}">Review Students</a>
       </div>
     </section>
 
@@ -49,8 +49,8 @@
           <span class="k">Students</span>
           <span class="pill-soft">Total</span>
         </div>
-        <div class="metric-num">28</div>
-        <div class="metric-foot muted">Across active classes.</div>
+        <div class="metric-num">{{ totals.total_students }}</div>
+        <div class="metric-foot muted">Active students with enrollments.</div>
       </div>
 
       <div class="card metric warn">
@@ -58,7 +58,7 @@
           <span class="k">At Risk</span>
           <span class="pill-warn">Medium</span>
         </div>
-        <div class="metric-num">6</div>
+        <div class="metric-num">{{ totals.at_risk }}</div>
         <div class="metric-foot muted">Needs follow-up soon.</div>
       </div>
 
@@ -67,8 +67,8 @@
           <span class="k">Critical</span>
           <span class="pill-danger">High</span>
         </div>
-        <div class="metric-num">2</div>
-        <div class="metric-foot muted">Immediate intervention.</div>
+        <div class="metric-num">{{ totals.critical }}</div>
+        <div class="metric-foot muted">Immediate intervention recommended.</div>
       </div>
     </section>
 
@@ -76,11 +76,12 @@
       <div class="table-head">
         <div>
           <h2>Students Overview</h2>
-          <p class="muted">Example data (replace from backend later).</p>
+          <p class="muted">Computed from Enrollment attendance_rate + current_grade.</p>
         </div>
-        <div class="table-actions">
-          <button class="btn btn-ghost">Filter</button>
-          <button class="btn btn-ghost">Sort</button>
+
+        <div class="table-actions" style="display:flex; gap:10px; flex-wrap:wrap;">
+          <span class="badge">Updated: {{ generated_at }}</span>
+          <a class="btn btn-ghost" href="{{ url_for('instructor.ins_students') }}">Full List</a>
         </div>
       </div>
 
@@ -96,31 +97,29 @@
               <th>Action</th>
             </tr>
           </thead>
+
           <tbody>
-            <tr>
-              <td><strong>Ali Hassan</strong></td>
-              <td>Physics</td>
-              <td>52%</td>
-              <td>55%</td>
-              <td><span class="risk high">High</span></td>
-              <td><button class="btn btn-ghost small">Contact</button></td>
-            </tr>
-            <tr>
-              <td><strong>Maya Karim</strong></td>
-              <td>Algorithms</td>
-              <td>76%</td>
-              <td>68%</td>
-              <td><span class="risk med">Medium</span></td>
-              <td><button class="btn btn-ghost small">Review</button></td>
-            </tr>
-            <tr>
-              <td><strong>Jad Farah</strong></td>
-              <td>Databases</td>
-              <td>91%</td>
-              <td>84%</td>
-              <td><span class="risk low">Low</span></td>
-              <td><button class="btn btn-ghost small">View</button></td>
-            </tr>
+            {% if overview and overview|length > 0 %}
+              {% for row in overview %}
+              <tr>
+                <td><strong>{{ row.student_name }}</strong></td>
+                <td>{{ row.course_name }}</td>
+                <td>{{ "%.0f"|format(row.attendance_rate) }}%</td>
+                <td>{{ "%.0f"|format(row.current_grade) }}%</td>
+                <td>
+                  <span class="risk {{ row.risk_class }}">{{ row.risk_label }}</span>
+                </td>
+                <td>
+                  {# You can later link this to a student detail page if you add one #}
+                  <a class="btn btn-ghost small" href="{{ url_for('instructor.ins_students') }}">View</a>
+                </td>
+              </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="6" class="muted" style="padding:18px;">No enrollments found yet.</td>
+              </tr>
+            {% endif %}
           </tbody>
         </table>
       </div>

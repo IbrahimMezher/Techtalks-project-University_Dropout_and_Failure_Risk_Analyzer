@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Verify New Email</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="bg-blob blob-1"></div>
+  <div class="bg-blob blob-2"></div>
+
+  <main class="auth">
+    <div class="card" style="max-width:520px; width:100%;">
+      <div class="card-header">
+        <div class="brandline">
+          <span class="brand-dot"></span>
+          <span class="brand-name">Dropout Analyzer</span>
+        </div>
+        <h1>Verify your new email</h1>
+        <p class="subtext">We sent a code to <b>{{ pending_email }}</b>.</p>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flashes">
+            {% for category, message in messages %}
+              <p class="flash {{ category }}">{{ message }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      <form class="form" method="POST">
+        <div class="field">
+          <label>Verification Code</label>
+          <input type="text" name="code" placeholder="6-digit code" required>
+        </div>
+        <button class="btn btn-primary" type="submit">Confirm Email</button>
+      </form>
+
+      <div class="links">
+        <a class="link" href="{{ url_for('views.home') }}">Cancel</a>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

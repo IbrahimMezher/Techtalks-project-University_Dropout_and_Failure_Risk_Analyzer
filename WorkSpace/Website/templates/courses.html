@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="{{ current_user.theme_preference or 'light' }}">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -13,10 +13,9 @@
     .course-item:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
     .modal { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.4); backdrop-filter:blur(4px); z-index: 999; }
     .modal-card { background:white; padding:24px; border-radius:18px; width:420px; max-width:94%; box-shadow: var(--shadow); animation: popIn .2s ease; }
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
-    .stat-card { background: linear-gradient(135deg, #f8fafc 0%, #fff 100%); border: 1px solid var(--line); border-radius: 14px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     .fade-in-up { opacity:0; transform: translateY(8px); animation: fadeUp .36s ease forwards; }
     @keyframes fadeUp { to { opacity:1; transform: translateY(0); } }
+    select{ width:100%; padding:12px; border-radius:14px; border:1px solid rgba(15,23,42,.12); background: rgba(255,255,255,.82); }
   </style>
 </head>
 <body>
@@ -31,16 +30,16 @@
         <span class="brand-name">Dropout Analyzer</span>
       </div>
       <nav class="nav">
-        <a class="nav-item" href="{{url_for('student_views.dashboard')}}">Dashboard</a>
-        <a class="nav-item active" href="{{url_for('student_views.courses')}}">Courses</a>
-        <a class="nav-item" href="{{url_for('student_views.calender')}}">Calendar</a>
-        <a class="nav-item" href="{{url_for('student_views.settings')}}">Settings</a>
+        <a class="nav-item {% if active_page=='dashboard' %}active{% endif %}" href="{{ url_for('student_views.dashboard') }}">Dashboard</a>
+        <a class="nav-item {% if active_page=='courses' %}active{% endif %}" href="{{ url_for('student_views.courses') }}">Courses</a>
+        <a class="nav-item {% if active_page=='calendar' %}active{% endif %}" href="{{ url_for('student_views.calender') }}">Calendar</a>
+        <a class="nav-item {% if active_page=='settings' %}active{% endif %}" href="{{ url_for('student_views.student_settings') }}">Settings</a>
       </nav>
     </div>
   </header>
 
   <div style="max-width:1100px; margin:40px auto; padding:0 24px;">
-    
+
     <div class="card" style="margin-bottom:24px;">
       <div class="card-header" style="margin:0;">
         <h1>My Courses</h1>
@@ -49,10 +48,10 @@
     </div>
 
     <div class="card" style="margin-bottom:24px;">
-      <div style="display:flex; gap:12px;">
-        <button id="nav-courses" class="btn btn-ghost active">Courses</button>
-        <button id="nav-attendance" class="btn btn-ghost">Attendance</button>
-        <button id="nav-grades" class="btn btn-ghost">Grades</button>
+      <div style="display:flex; gap:12px; flex-wrap:wrap;">
+        <button id="nav-courses" class="btn btn-ghost active" type="button">Courses</button>
+        <button id="nav-attendance" class="btn btn-ghost" type="button">Attendance</button>
+        <button id="nav-grades" class="btn btn-ghost" type="button">Grades</button>
       </div>
     </div>
 
@@ -63,9 +62,9 @@
             <strong>Enrolled courses</strong>
             <div class="muted">Manage enrollments below</div>
           </div>
-          <button id="open-enroll" class="btn btn-primary">Enroll in a Course</button>
+          <button id="open-enroll" class="btn btn-primary" type="button">Enroll in a Course</button>
         </div>
-        
+
         <div id="enrolled-list" class="list">
           {% if enrollments %}
             {% for e in enrollments %}
@@ -73,7 +72,9 @@
                 <div>
                   <h3 style="margin:0 0 4px 0; font-size:18px;">{{ e.course.course_name }}</h3>
                   <p class="muted" style="margin:0; font-size:14px;">
-                    Code: {{ e.course.course_code }} &bull; Attendance: {{ "%.1f"|format(e.attendance_rate) }}% &bull; Grade: {{ "%.1f"|format(e.current_grade) }}%
+                    Code: {{ e.course.course_code }} &bull;
+                    Attendance: {{ "%.1f"|format(e.attendance_rate) }}% &bull;
+                    Grade: {{ "%.1f"|format(e.current_grade) }}%
                   </p>
                 </div>
               </div>
@@ -90,12 +91,14 @@
             <strong>Attendance Tracker</strong>
             <div class="muted">Track your attendance across courses</div>
           </div>
-          <button id="open-attendance" class="btn btn-primary">Add Attendance</button>
+          <button id="open-attendance" class="btn btn-primary" type="button">Add Attendance</button>
         </div>
-        
+
         <div id="attendance-summary" style="margin-top:16px;">
           {% for e in enrollments %}
-            <h3 style="margin-top: 24px; border-bottom: 1px solid var(--border-line); padding-bottom: 8px;">{{ e.course.course_name }} ({{ "%.1f"|format(e.attendance_rate) }}%)</h3>
+            <h3 style="margin-top: 24px; border-bottom: 1px solid var(--line); padding-bottom: 8px;">
+              {{ e.course.course_name }} ({{ "%.1f"|format(e.attendance_rate) }}%)
+            </h3>
             <div class="list" style="margin-top: 12px;">
               {% for a in e.attendance_records %}
                 <div class="course-item" style="padding: 12px 16px;">
@@ -116,22 +119,26 @@
         <div class="row">
           <div>
             <strong>Grade Book</strong>
-            <div class="muted">View and resolve grades for your courses</div>
+            <div class="muted">View and manage grades for your courses</div>
           </div>
-          <button id="open-resolve" class="btn btn-primary">Add Grade</button>
+          <button id="open-resolve" class="btn btn-primary" type="button">Add Grade</button>
         </div>
-        
+
         <div id="grades-list" style="margin-top:24px;">
           {% for e in enrollments %}
-            <h3 style="margin-top: 24px; border-bottom: 1px solid var(--border-line); padding-bottom: 8px;">{{ e.course.course_name }} (Current Avg: {{ "%.1f"|format(e.current_grade) }}%)</h3>
+            <h3 style="margin-top: 24px; border-bottom: 1px solid var(--line); padding-bottom: 8px;">
+              {{ e.course.course_name }} (Current Avg: {{ "%.1f"|format(e.current_grade) }}%)
+            </h3>
             <div class="list" style="margin-top: 12px;">
               {% for g in e.grades %}
                 <div class="course-item" style="padding: 12px 16px;">
                   <div>
                     <strong style="display: block; margin-bottom: 4px;">{{ g.exam_name }}</strong>
-                    <span class="muted" style="font-size: 13px;">Date: {{ g.date_recorded.strftime('%Y-%m-%d') }} &bull; Weight: {{ g.weight }}%</span>
+                    <span class="muted" style="font-size: 13px;">
+                      Date: {{ g.date_recorded.strftime('%Y-%m-%d') }} &bull; Weight: {{ g.weight }}%
+                    </span>
                   </div>
-                  <div style="font-size: 18px; font-weight: 800; color: var(--primary);">
+                  <div style="font-size: 18px; font-weight: 900; color: var(--primary);">
                     {{ g.score }} / 100
                   </div>
                 </div>
@@ -143,92 +150,92 @@
         </div>
       </section>
     </div>
-
-  <div id="modal-enroll" class="modal" style="display:none;">
-    <form class="modal-card form" action="{{ url_for('student_views.enroll') }}" method="POST">
-      <h3>Enroll in a Course</h3>
-      <div class="field">
-        <label>Course Name</label>
-        <input name="course_name" type="text" placeholder="e.g., Calculus I" required />
-      </div>
-      <div class="field">
-        <label>Course Code</label>
-        <input name="course_code" type="text" placeholder="e.g., MATH101" required />
-      </div>
-      <div style="display:flex; gap:8px; margin-top:16px;">
-        <button type="submit" class="btn btn-primary" style="flex:1;">Enroll</button>
-        <button type="button" class="btn btn-ghost" style="flex:1;" onclick="document.getElementById('modal-enroll').style.display='none'">Cancel</button>
-      </div>
-    </form>
-  </div>
-
-  <div id="modal-resolve" class="modal" style="display:none;">
-    <form class="modal-card form" action="{{ url_for('student_views.add_grade') }}" method="POST">
-      <h3 id="modal-resolve-title">Resolve Grade</h3>
-      <div class="field">
-        <label>Course</label>
-        <select name="enrollment_id" required>
-          <option value="" disabled selected>Select a Course</option>
-          {% for e in enrollments %}
-            <option value="{{ e.id }}">{{ e.course.course_name }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div class="field">
-        <label>Exam Name</label>
-        <input name="exam_name" type="text" placeholder="e.g., Midterm 1" required />
-      </div>
-      <div style="display:flex; gap:12px;">
-        <div class="field" style="flex:1;">
-          <label>Score (0-100)</label>
-          <input name="score" type="number" min="0" max="100" step="0.1" required />
+    <div id="modal-enroll" class="modal" style="display:none;">
+      <form class="modal-card form" action="{{ url_for('student_views.enroll') }}" method="POST">
+        <h3>Enroll in a Course</h3>
+        <div class="field">
+          <label>Course Name</label>
+          <input name="course_name" type="text" placeholder="e.g., Calculus I" required />
         </div>
-        <div class="field" style="flex:1;">
-          <label>Weight (%)</label>
-          <input name="weight" type="number" min="0" max="100" step="0.1" required />
+        <div class="field">
+          <label>Course Code</label>
+          <input name="course_code" type="text" placeholder="e.g., MATH101" required />
         </div>
-      </div>
-      <div class="field">
-        <label>Test Date</label>
-        <input name="date" type="date" required />
-      </div>
-      <div style="display:flex; gap:8px; margin-top:16px;">
-        <button type="submit" class="btn btn-primary" style="flex:1;">Save Grade</button>
-        <button type="button" class="btn btn-ghost" style="flex:1;" onclick="document.getElementById('modal-resolve').style.display='none'">Cancel</button>
-      </div>
-    </form>
-  </div>
+        <div style="display:flex; gap:8px; margin-top:16px;">
+          <button type="submit" class="btn btn-primary" style="flex:1;">Enroll</button>
+          <button type="button" class="btn btn-ghost" style="flex:1;" onclick="document.getElementById('modal-enroll').style.display='none'">Cancel</button>
+        </div>
+      </form>
+    </div>
 
-  <div id="modal-attendance" class="modal" style="display:none;">
-    <form class="modal-card form" action="{{ url_for('student_views.add_attendance') }}" method="POST">
-      <h3>Resolve Attendance</h3>
-      <div class="field">
-        <label>Course Name</label>
-        <select name="enrollment_id" required>
-          <option value="" disabled selected>Select a Course</option>
-          {% for e in enrollments %}
-            <option value="{{ e.id }}">{{ e.course.course_name }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div class="field">
-        <label>Attendance Date</label>
-        <input name="date" type="date" required />
-      </div>
-      <div class="field">
-        <label>Status</label>
-        <select name="status" required>
-          <option value="present">Present</option>
-          <option value="absent">Absent</option>
-        </select>
-      </div>
-      <div style="display:flex; gap:8px; margin-top:16px;">
-        <button type="submit" class="btn btn-primary" style="flex:1;">Save</button>
-        <button type="button" class="btn btn-ghost" style="flex:1;" onclick="document.getElementById('modal-attendance').style.display='none'">Cancel</button>
-      </div>
-    </form>
+    <div id="modal-resolve" class="modal" style="display:none;">
+      <form class="modal-card form" action="{{ url_for('student_views.add_grade') }}" method="POST">
+        <h3>Add Grade</h3>
+        <div class="field">
+          <label>Course</label>
+          <select name="enrollment_id" required>
+            <option value="" disabled selected>Select a Course</option>
+            {% for e in enrollments %}
+              <option value="{{ e.id }}">{{ e.course.course_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label>Exam Name</label>
+          <input name="exam_name" type="text" placeholder="e.g., Midterm 1" required />
+        </div>
+        <div style="display:flex; gap:12px;">
+          <div class="field" style="flex:1;">
+            <label>Score (0-100)</label>
+            <input name="score" type="number" min="0" max="100" step="0.1" required />
+          </div>
+          <div class="field" style="flex:1;">
+            <label>Weight (%)</label>
+            <input name="weight" type="number" min="0" max="100" step="0.1" required />
+          </div>
+        </div>
+        <div class="field">
+          <label>Test Date</label>
+          <input name="date" type="date" required />
+        </div>
+        <div style="display:flex; gap:8px; margin-top:16px;">
+          <button type="submit" class="btn btn-primary" style="flex:1;">Save Grade</button>
+          <button type="button" class="btn btn-ghost" style="flex:1;" onclick="document.getElementById('modal-resolve').style.display='none'">Cancel</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="modal-attendance" class="modal" style="display:none;">
+      <form class="modal-card form" action="{{ url_for('student_views.add_attendance') }}" method="POST">
+        <h3>Add Attendance</h3>
+        <div class="field">
+          <label>Course Name</label>
+          <select name="enrollment_id" required>
+            <option value="" disabled selected>Select a Course</option>
+            {% for e in enrollments %}
+              <option value="{{ e.id }}">{{ e.course.course_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label>Attendance Date</label>
+          <input name="date" type="date" required />
+        </div>
+        <div class="field">
+          <label>Status</label>
+          <select name="status" required>
+            <option value="present">Present</option>
+            <option value="absent">Absent</option>
+          </select>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:16px;">
+          <button type="submit" class="btn btn-primary" style="flex:1;">Save</button>
+          <button type="button" class="btn btn-ghost" style="flex:1;" onclick="document.getElementById('modal-attendance').style.display='none'">Cancel</button>
+        </div>
+      </form>
+    </div>
+
   </div>
-  
 
   <script src="{{ url_for('static', filename='main.js') }}"></script>
 </body>

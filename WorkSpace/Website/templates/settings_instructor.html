@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Student Settings</title>
+  <title>Instructor Settings</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
   <style>
     main .card{ margin-bottom: 16px; }
@@ -30,19 +30,19 @@
       </div>
 
       <nav class="nav">
-        <a class="nav-item {% if active_page=='dashboard' %}active{% endif %}" href="{{ url_for('student_views.dashboard') }}">Dashboard</a>
-        <a class="nav-item {% if active_page=='courses' %}active{% endif %}" href="{{ url_for('student_views.courses') }}">Courses</a>
-        <a class="nav-item {% if active_page=='calendar' %}active{% endif %}" href="{{ url_for('student_views.calender') }}">Calendar</a>
-        <a class="nav-item {% if active_page=='settings' %}active{% endif %}" href="{{ url_for('student_views.student_settings') }}">Settings</a>
+        <a class="nav-item {% if active_page=='dashboard' %}active{% endif %}" href="{{ url_for('instructor.instructor_log') }}">Dashboard</a>
+        <a class="nav-item {% if active_page=='students' %}active{% endif %}" href="{{ url_for('instructor.ins_students') }}">Students</a>
+        <a class="nav-item {% if active_page=='reports' %}active{% endif %}" href="{{ url_for('instructor.reports') }}">Reports</a>
+        <a class="nav-item {% if active_page=='settings' %}active{% endif %}" href="{{ url_for('instructor.settings') }}">Settings</a>
       </nav>
     </div>
   </header>
 
   <div class="settings-container">
     <aside class="settings-sidebar">
-      <a class="sidebar-link {% if tab=='profile' %}active{% endif %}" href="{{ url_for('student_views.student_settings', tab='profile') }}">Profile Details</a>
-      <a class="sidebar-link {% if tab=='notifications' %}active{% endif %}" href="{{ url_for('student_views.student_settings', tab='notifications') }}">Notifications</a>
-      <a class="sidebar-link {% if tab=='security' %}active{% endif %}" href="{{ url_for('student_views.student_settings', tab='security') }}">Security & Password</a>
+      <a class="sidebar-link {% if tab=='profile' %}active{% endif %}" href="{{ url_for('instructor.settings', tab='profile') }}">Profile Details</a>
+      <a class="sidebar-link {% if tab=='notifications' %}active{% endif %}" href="{{ url_for('instructor.settings', tab='notifications') }}">Notifications</a>
+      <a class="sidebar-link {% if tab=='security' %}active{% endif %}" href="{{ url_for('instructor.settings', tab='security') }}">Security & Password</a>
       <a href="{{ url_for('auth.logout') }}" class="sidebar-link danger">Logout</a>
     </aside>
 
@@ -64,12 +64,12 @@
             <p class="subtext">Update your personal info and preferences.</p>
           </div>
 
-          <form class="form" action="{{ url_for('student_views.update_settings') }}" method="POST">
+          <form class="form" action="{{ url_for('instructor.update_settings') }}" method="POST">
             <div class="split">
               <div class="field">
                 <label>Full Name</label>
                 <input type="text" name="name" value="{{ current_user.first_name }} {{ current_user.last_name }}" required>
-                <div class="hint">Shown on your student profile.</div>
+                <div class="hint">Shown in your instructor profile.</div>
               </div>
 
               <div class="field">
@@ -94,7 +94,20 @@
           </form>
         </div>
 
+        <div class="card">
+          <div class="card-header">
+            <h1>About Risk Indicators</h1>
+            <p class="subtext">
+              Risk levels are computed from aggregated attendance and grades to guide support and intervention.
+            </p>
+          </div>
+          <p class="hint" style="margin:0;">
+            This tool is intended for prevention and student success—use it to start conversations and offer help early.
+          </p>
+        </div>
+
       {% elif tab == 'security' %}
+        <!-- SECURITY -->
         <div class="card">
           <div class="card-header">
             <h1>Change Email</h1>
@@ -133,27 +146,27 @@
             <p class="subtext">Choose a strong password you don’t reuse elsewhere.</p>
           </div>
 
-          <form class="form" action="{{ url_for('auth.change_password') }}" method="POST">
-            <div class="field">
-              <label>Current Password</label>
-              <input type="password" name="current_password" required>
-            </div>
+         <form class="form" action="{{ url_for('auth.change_password') }}" method="POST">
+  <div class="field">
+    <label>Current Password</label>
+    <input type="password" name="current_password" required>
+  </div>
 
-            <div class="split">
-              <div class="field">
-                <label>New Password</label>
-                <input type="password" name="new_password1" required>
-                <div class="hint">8+ chars, 1 uppercase, 1 special character.</div>
-              </div>
+  <div class="split">
+    <div class="field">
+      <label>New Password</label>
+      <input type="password" name="new_password1" required>
+      <div class="hint">8+ chars, 1 uppercase, 1 special character.</div>
+    </div>
 
-              <div class="field">
-                <label>Confirm New Password</label>
-                <input type="password" name="new_password2" required>
-              </div>
-            </div>
+    <div class="field">
+      <label>Confirm New Password</label>
+      <input type="password" name="new_password2" required>
+    </div>
+  </div>
 
-            <button class="btn btn-primary" type="submit" style="margin-top:6px;">Update Password</button>
-          </form>
+  <button class="btn btn-primary" type="submit" style="margin-top:6px;">Update Password</button>
+</form>
         </div>
 
       {% else %}
@@ -162,7 +175,7 @@
             <h1>Notifications</h1>
             <p class="subtext">Coming soon.</p>
           </div>
-          <p class="hint" style="margin:0;">Later we can add reminders for deadlines and low attendance.</p>
+          <p class="hint" style="margin:0;">You can add email alerts and weekly summaries here later.</p>
         </div>
       {% endif %}
     </main>

@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en" data-theme="{{ current_user.theme_preference or 'light' }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Instructor • Reports</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+  <style>
+    .page{ max-width:1100px; margin: 28px auto; padding: 0 24px; }
+    .row{ display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap; }
+    .title{ margin:0; font-size:26px; letter-spacing:-.5px; }
+    .subtitle{ margin:6px 0 0; color: var(--muted); font-weight:750; }
+
+    .grid{ display:grid; grid-template-columns: 1.25fr .75fr; gap: 14px; margin-top: 16px; }
+    .mini-grid{ display:grid; grid-template-columns: 1fr; gap: 14px; }
+
+    .tbl{ width:100%; border-collapse: collapse; }
+    .tbl th,.tbl td{ padding: 12px 12px; border-bottom:1px solid rgba(15,23,42,.08); text-align:left; }
+    .tbl th{ font-size:12px; letter-spacing:.4px; text-transform:uppercase; color: var(--muted2); }
+
+    .bar{
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(15,23,42,.08);
+      overflow:hidden;
+      border: 1px solid rgba(15,23,42,.08);
+    }
+    .bar > span{ display:block; height:100%; width: 0%; background: linear-gradient(135deg, var(--primary), #7c3aed); }
+    .legend{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; color: var(--muted); font-weight:750; font-size:13px; }
+
+    .pill{
+      font-size:12px; font-weight:900; padding:6px 10px; border-radius:999px;
+      border:1px solid var(--line); background: rgba(255,255,255,.65);
+    }
+
+    .risk{
+      display:inline-flex; align-items:center; font-weight:950; font-size:12px;
+      padding:6px 10px; border-radius:999px; border:1px solid rgba(15,23,42,.10);
+      background: rgba(255,255,255,.65);
+    }
+    .risk.low{ border-color: rgba(22,163,74,.22); background: rgba(22,163,74,.10); color: var(--success); }
+    .risk.med{ border-color: rgba(245,158,11,.22); background: rgba(245,158,11,.10); color:#b45309; }
+    .risk.high{ border-color: rgba(220,38,38,.22); background: rgba(220,38,38,.10); color: var(--danger); }
+
+    @media (max-width: 980px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg-grid"></div>
+  <div class="bg-blob blob-1"></div>
+  <div class="bg-blob blob-2"></div>
+
+  <header class="appbar">
+  <div class="appbar-inner">
+    <div class="brand">
+      <span class="brand-dot"></span>
+      <span class="brand-name">Dropout Analyzer</span>
+    </div>
+
+    <nav class="nav">
+      <a class="nav-item {% if active_page=='dashboard' %}active{% endif %}" href="{{ url_for('instructor.instructor_log') }}">Dashboard</a>
+      <a class="nav-item {% if active_page=='students' %}active{% endif %}" href="{{ url_for('instructor.ins_students') }}">Students</a>
+      <a class="nav-item {% if active_page=='reports' %}active{% endif %}" href="{{ url_for('instructor.reports') }}">Reports</a>
+      <a class="nav-item {% if active_page=='settings' %}active{% endif %}" href="{{ url_for('instructor.settings') }}">Settings</a>
+    </nav>
+  </div>
+</header>
+
+  <main class="page">
+    <section class="row">
+      <div>
+        <h1 class="title">Reports</h1>
+        <p class="subtitle">Course-level view + most urgent follow-ups.</p>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <span class="pill">Generated: {{ generated_at }}</span>
+        <a class="btn btn-ghost" href="{{ url_for('instructor.instructor_log') }}">Back to Dashboard</a>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <div class="card-header">
+          <h1 style="margin:0 0 6px; font-size:18px;">Risk by Course</h1>
+          <p class="subtext" style="margin:0;">Distribution based on enrollments per course.</p>
+        </div>
+
+        {% if courses and courses|length > 0 %}
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Course</th>
+                <th>Enrollments</th>
+                <th>High Risk</th>
+                <th>Progress</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for c in courses %}
+              <tr>
+                <td><strong>{{ c.course_name }}</strong></td>
+                <td>{{ c.total }}</td>
+                <td><span class="risk high">{{ c.high }}</span></td>
+                <td style="min-width:220px;">
+                  <div class="bar">
+                    <span style="width: {{ c.high_pct }}%;"></span>
+                  </div>
+                  <div class="legend">{{ "%.0f"|format(c.high_pct) }}% high-risk</div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p class="subtitle" style="margin:0;">No course data yet.</p>
+        {% endif %}
+      </div>
+
+      <div class="mini-grid">
+        <div class="card">
+          <div class="card-header">
+            <h1 style="margin:0 0 6px; font-size:18px;">Top Critical</h1>
+            <p class="subtext" style="margin:0;">Students needing immediate support.</p>
+          </div>
+
+          {% if critical_list and critical_list|length > 0 %}
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Course</th>
+                  <th>Risk</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for s in critical_list %}
+                <tr>
+                  <td><strong>{{ s.student_name }}</strong></td>
+                  <td>{{ s.course_name }}</td>
+                  <td><span class="risk high">High</span></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <p class="subtitle" style="margin:0;">No critical cases found.</p>
+          {% endif %}
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h1 style="margin:0 0 6px; font-size:18px;">Upcoming Events</h1>
+            <p class="subtext" style="margin:0;">From CalendarEvent (optional).</p>
+          </div>
+
+          {% if events and events|length > 0 %}
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Date</th>
+                  <th>Type</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for e in events %}
+                <tr>
+                  <td><strong>{{ e.title }}</strong></td>
+                  <td>{{ e.event_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                  <td><span class="pill">{{ e.event_type }}</span></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <p class="subtitle" style="margin:0;">No upcoming events.</p>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

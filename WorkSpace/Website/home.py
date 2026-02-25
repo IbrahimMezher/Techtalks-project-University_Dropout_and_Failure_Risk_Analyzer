@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, url_for, redirect, flash
 from flask_login import login_required, current_user
 from . import db
+from .emailer import contact_us_function
 
 views = Blueprint('views', __name__)
 
@@ -13,7 +14,7 @@ def home():
     if current_user.role == "student":
         return redirect(url_for("student_views.dashboard")) # Point to new Blueprint
     
-    return redirect(url_for("views.instructor"))
+    return redirect(url_for("instructor.instructor_log"))
 
 @views.route('/')
 def intro():
@@ -39,12 +40,6 @@ def contact():
         return render_template("introductorypage.html")
 
 
-@views.route('/instructor')
-@login_required
-def instructor():
-    if current_user.role != "instructor":
-        return redirect(url_for("views.home"))
-    return render_template("instructorhomepage.html")
 
 
 @views.route('/Choose', methods=['GET','POST'])

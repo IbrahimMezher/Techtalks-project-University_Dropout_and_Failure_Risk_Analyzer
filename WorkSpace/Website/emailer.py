@@ -102,3 +102,29 @@ def contact_us_function(email:str,message:str,name:str):
      """
     text = f""
     return _send_email(SMTP_USER,subject, html, text)
+
+
+def send_student_invite(to_email: str, invite_link: str, instructor_name: str, course_name: str | None = None):
+    subject = "You were invited to join Dropout Analyzer"
+    course_line = f"<p><b>Course:</b> {course_name}</p>" if course_name else ""
+    html = f"""
+    <div style="font-family:Arial,sans-serif;line-height:1.6">
+      <h2>You're invited</h2>
+      <p><b>{instructor_name}</b> invited you to join Dropout Analyzer.</p>
+      {course_line}
+      <p>Click below to accept:</p>
+      <p>
+        <a href="{invite_link}" style="background:#4f46e5;color:#fff;text-decoration:none;
+                               padding:10px 14px;border-radius:8px;display:inline-block">
+          Accept Invitation
+        </a>
+      </p>
+      <p>If the button doesn’t work, copy/paste:</p>
+      <p><a href="{invite_link}">{invite_link}</a></p>
+      <p style="color:#64748b;font-size:13px;margin-top:14px;">
+        If you didn’t expect this invitation, you can ignore this email.
+      </p>
+    </div>
+    """
+    text = f"You were invited by {instructor_name}. Accept here: {invite_link}"
+    return _send_email(to_email, subject, html, text)

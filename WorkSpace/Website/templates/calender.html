@@ -1,146 +1,147 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="{{ current_user.theme_preference or 'light' }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Calendar</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
   <style>
-    .calendar-day { min-height: 100px; padding: 10px; border-radius: 12px; background: rgba(255,255,255,0.5); border: 1px solid var(--line); }
+    .calendar-day { min-height: 110px; padding: 10px; border-radius: 16px; background: rgba(255,255,255,0.55); border: 1px solid var(--line); }
     .calendar-day.today { border-color: var(--primary); background: var(--primarySoft); }
-    .day-number { font-weight: bold; color: var(--muted); margin-bottom: 8px; }
-    .event-badge { background: var(--primary); color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; margin-bottom: 4px; display: block; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;}
+    .day-number { font-weight: 950; color: var(--muted); margin-bottom: 8px; }
+    .event-badge {
+      background: var(--primary); color: white; padding: 6px 8px; border-radius: 10px;
+      font-size: 11px; font-weight: 900; margin-bottom: 6px; display: block;
+      text-overflow: ellipsis; overflow: hidden; white-space: nowrap;
+    }
   </style>
 </head>
 
 <body>
-<div class="bg-grid"></div>
-<div class="bg-blob blob-1"></div>
-<div class="bg-blob blob-2"></div>
+  <div class="bg-grid"></div>
+  <div class="bg-blob blob-1"></div>
+  <div class="bg-blob blob-2"></div>
 
-<header class="appbar">
-  <div class="appbar-inner">
-    <div class="brand">
-      <span class="brand-dot"></span>
-      <span class="brand-name">Dropout Analyzer</span>
-    </div>
-    <nav class="nav">
-      <a class="nav-item" href="{{url_for('student_views.dashboard')}}">Dashboard</a>
-      <a class="nav-item" href="{{url_for('student_views.courses')}}">Courses</a>
-      <a class="nav-item active" href="{{url_for('student_views.calender')}}">Calendar</a>
-      <a class="nav-item" href="{{url_for('student_views.settings')}}">Settings</a>
-    </nav>
-  </div>
-</header>
-
-<div style="max-width:1100px; margin:40px auto; padding:0 24px;">
-  <div class="card" style="margin-bottom:24px;">
-    <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
-      <div>
-        <h1>Academic Calendar</h1>
-        <p class="subtext">Track exams, deadlines, and attendance dates.</p>
+  <header class="appbar">
+    <div class="appbar-inner">
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <span class="brand-name">Dropout Analyzer</span>
       </div>
-      <button class="btn btn-primary" onclick="addEventPrompt()">+ Add Event</button>
+      <nav class="nav">
+        <a class="nav-item {% if active_page=='dashboard' %}active{% endif %}" href="{{ url_for('student_views.dashboard') }}">Dashboard</a>
+        <a class="nav-item {% if active_page=='courses' %}active{% endif %}" href="{{ url_for('student_views.courses') }}">Courses</a>
+        <a class="nav-item {% if active_page=='calendar' %}active{% endif %}" href="{{ url_for('student_views.calender') }}">Calendar</a>
+        <a class="nav-item {% if active_page=='settings' %}active{% endif %}" href="{{ url_for('student_views.student_settings') }}">Settings</a>
+      </nav>
+    </div>
+  </header>
+
+  <div style="max-width:1100px; margin:40px auto; padding:0 24px;">
+    <div class="card" style="margin-bottom:24px;">
+      <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+        <div>
+          <h1>Academic Calendar</h1>
+          <p class="subtext">Track exams, deadlines, and key dates.</p>
+        </div>
+        <button class="btn btn-primary" type="button" onclick="addEventPrompt()">+ Add Event</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px; gap:10px; flex-wrap:wrap;">
+        <button class="btn btn-ghost" type="button" onclick="changeMonth(-1)">← Prev</button>
+        <h2 id="monthTitle" style="margin:0;"></h2>
+        <button class="btn btn-ghost" type="button" onclick="changeMonth(1)">Next →</button>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:10px; text-align:center; font-weight:900; color:var(--muted); margin-bottom:10px;">
+        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+      </div>
+
+      <div id="calendarGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:10px;"></div>
     </div>
   </div>
 
-  <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-      <button id="prevMonth" class="btn btn-ghost" onclick="changeMonth(-1)">← Prev</button>
-      <h2 id="monthTitle" style="margin:0;"></h2>
-      <button id="nextMonth" class="btn btn-ghost" onclick="changeMonth(1)">Next →</button>
-    </div>
-    
-    <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:12px; text-align:center; font-weight:bold; color:var(--muted); margin-bottom:12px;">
-      <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
-    </div>
+  <script>
+    let currentDate = new Date();
+    let userEvents = [];
 
-    <div id="calendarGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:12px;"></div>
-  </div>
-</div>
-
-<script>
-  let currentDate = new Date();
-  let userEvents = [];
-
-  // Fetch events from backend
-  async function fetchEvents() {
-    try {
-      const response = await fetch('/api/events');
-      if (response.ok) {
-        userEvents = await response.json();
-        renderCalendar();
+    async function fetchEvents() {
+      try {
+        const response = await fetch('/api/events');
+        if (response.ok) {
+          userEvents = await response.json();
+          renderCalendar();
+        }
+      } catch (e) {
+        console.error("Failed to fetch events", e);
       }
-    } catch (e) {
-      console.error("Failed to fetch events", e);
     }
-  }
 
-  function renderCalendar() {
-    const grid = document.getElementById('calendarGrid');
-    const monthTitle = document.getElementById('monthTitle');
-    grid.innerHTML = '';
-    
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-    
-    monthTitle.innerText = new Date(year, month).toLocaleString('default', { month: 'long', year: 'numeric' });
-    
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    
-    // Empty slots before 1st of month
-    for(let i = 0; i < firstDay; i++) {
-      let div = document.createElement('div');
-      grid.appendChild(div);
-    }
-    
-    // Days of month
-    let today = new Date();
-    for(let i = 1; i <= daysInMonth; i++) {
-      let cell = document.createElement('div');
-      cell.className = 'calendar-day';
-      if (year === today.getFullYear() && month === today.getMonth() && i === today.getDate()) {
-        cell.classList.add('today');
+    function renderCalendar() {
+      const grid = document.getElementById('calendarGrid');
+      const monthTitle = document.getElementById('monthTitle');
+      grid.innerHTML = '';
+
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+
+      monthTitle.innerText = new Date(year, month).toLocaleString('default', { month: 'long', year: 'numeric' });
+
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      for(let i = 0; i < firstDay; i++) {
+        let div = document.createElement('div');
+        grid.appendChild(div);
       }
-      
-      let dayStr = `${year}-${String(month+1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-      let html = `<div class="day-number">${i}</div>`;
-      
-      // Filter events for this day
-      let dayEvents = userEvents.filter(e => e.date === dayStr);
-      dayEvents.forEach(ev => {
-        let color = ev.type === 'Exam' ? 'var(--danger)' : 'var(--primary)';
-        html += `<div class="event-badge" style="background:${color}">${ev.title}</div>`;
-      });
-      
-      cell.innerHTML = html;
-      grid.appendChild(cell);
-    }
-  }
 
-  function changeMonth(dir) {
-    currentDate.setMonth(currentDate.getMonth() + dir);
+      let today = new Date();
+      for(let i = 1; i <= daysInMonth; i++) {
+        let cell = document.createElement('div');
+        cell.className = 'calendar-day';
+
+        if (year === today.getFullYear() && month === today.getMonth() && i === today.getDate()) {
+          cell.classList.add('today');
+        }
+
+        let dayStr = `${year}-${String(month+1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+        let html = `<div class="day-number">${i}</div>`;
+
+        let dayEvents = userEvents.filter(e => e.date === dayStr);
+        dayEvents.forEach(ev => {
+          let t = (ev.type || "").toLowerCase();
+          let color = (t === 'exam') ? 'var(--danger)' : 'var(--primary)';
+          html += `<div class="event-badge" style="background:${color}">${ev.title}</div>`;
+        });
+
+        cell.innerHTML = html;
+        grid.appendChild(cell);
+      }
+    }
+
+    function changeMonth(dir) {
+      currentDate.setMonth(currentDate.getMonth() + dir);
+      renderCalendar();
+    }
+
+    function addEventPrompt() {
+      let title = prompt("Event Title (e.g., Math Midterm):");
+      let date = prompt("Date (YYYY-MM-DD):");
+      let type = prompt("Type (Exam/Deadline/Lecture):", "Deadline");
+
+      if(title && date && type) {
+        fetch('/api/events', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, date, type })
+        }).then(() => fetchEvents());
+      }
+    }
+
     renderCalendar();
-  }
-
-  function addEventPrompt() {
-    let title = prompt("Event Title (e.g., Math Midterm):");
-    let date = prompt("Date (YYYY-MM-DD):");
-    let type = prompt("Type (Exam/Deadline/Lecture):", "Deadline");
-    
-    if(title && date && type) {
-      fetch('/api/events', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, date, type })
-      }).then(() => fetchEvents()); // refresh calendar
-    }
-  }
-
-  // Initial load
-  renderCalendar();
-  fetchEvents();
-</script>
+    fetchEvents();
+  </script>
 </body>
 </html>

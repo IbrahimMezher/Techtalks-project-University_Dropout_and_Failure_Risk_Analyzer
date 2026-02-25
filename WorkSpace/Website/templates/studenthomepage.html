@@ -1,128 +1,133 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="{{ current_user.theme_preference or 'light' }}">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Student Home</title>
+  <title>Student Dashboard</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
-  
+
   <style>
-    /* --- DASHBOARD GRIDS & CARDS --- */
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 24px;
-      margin-bottom: 32px;
+    .wrap{ max-width:1100px; margin:40px auto; padding:0 24px; }
+
+    .page-head{
+      display:flex; justify-content:space-between; align-items:flex-end; gap:16px;
+      margin-bottom: 18px;
+    }
+    .title{ margin:0; font-size:28px; letter-spacing:-.4px; }
+    .subtitle{ margin:6px 0 0; color:var(--muted); font-weight:750; }
+
+    .kpi-grid{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    .kpi{
+      padding: 22px;
+      border-radius: 22px;
+      background: var(--glass);
+      border:1px solid var(--line);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+    .kpi-top{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+    .kpi-k{ font-size:12px; font-weight:900; color:var(--muted2); letter-spacing:.08em; text-transform:uppercase; }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 10px; border-radius:999px;
+      font-size:12px; font-weight:900;
+      border:1px solid rgba(15,23,42,.10);
+      background: rgba(255,255,255,.65);
+      color: var(--muted);
+    }
+    .pill.good{ border-color: rgba(16,185,129,.25); background: rgba(16,185,129,.12); color: #0f766e; }
+    .pill.warn{ border-color: rgba(245,158,11,.25); background: rgba(245,158,11,.12); color: #b45309; }
+    .pill.danger{ border-color: rgba(239,68,68,.22); background: rgba(239,68,68,.10); color: #b91c1c; }
+
+    .kpi-num{ font-size: 44px; font-weight: 950; letter-spacing:-.04em; }
+    .kpi-foot{ margin-top:6px; color:var(--muted2); font-weight:750; }
+
+    .actions{ display:flex; gap:10px; flex-wrap:wrap; }
+    .btn.small{ padding: 10px 12px; border-radius: 14px; }
+
+    .grid-2{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
     }
 
-    .metric-card {
-      background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.6) 100%);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      border-radius: 24px;
-      padding: 24px;
-      box-shadow: 0 10px 40px -10px rgba(15, 23, 42, 0.1), inset 0 1px 1px rgba(255,255,255,1);
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
-    }
-    .metric-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.15), inset 0 1px 1px rgba(255,255,255,1);
+    .table-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom: 12px; }
+    .table-head h2{ margin:0; font-size:20px; }
+    .muted{ color:var(--muted); font-weight:750; }
+
+    table.tbl{ width:100%; border-collapse:separate; border-spacing:0; overflow:hidden; border-radius: 16px; }
+    .tbl th, .tbl td{ padding: 14px 14px; border-bottom:1px solid rgba(15,23,42,.06); text-align:left; }
+    .tbl th{ font-size:12px; font-weight:900; letter-spacing:.08em; text-transform:uppercase; color:var(--muted2); background: rgba(15,23,42,.02); }
+    .tbl tr:hover td{ background: rgba(255,255,255,.55); }
+
+    .course-cell{ display:flex; align-items:center; gap:10px; }
+    .course-icon{
+      width:34px; height:34px; border-radius: 12px;
+      display:grid; place-items:center;
+      background: rgba(79,70,229,.12);
+      border:1px solid rgba(79,70,229,.18);
+      font-weight:900; color: var(--primary);
     }
 
-    .metric-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-    .metric-title {
-      font-size: 13px;
-      font-weight: 800;
-      color: #64748b;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .metric-value {
-      font-size: 46px;
-      font-weight: 900;
-      color: #0f172a;
-      line-height: 1.1;
-      letter-spacing: -0.03em;
-    }
-    .metric-footer {
-      font-size: 14px;
-      color: #94a3b8;
-      font-weight: 600;
-      margin-top: 8px;
-    }
+    .risk{ display:inline-flex; padding:6px 10px; border-radius:999px; font-weight:900; font-size:12px; border:1px solid transparent; }
+    .risk.good{ background: rgba(16,185,129,.12); border-color: rgba(16,185,129,.22); color:#0f766e; }
+    .risk.warn{ background: rgba(245,158,11,.12); border-color: rgba(245,158,11,.22); color:#b45309; }
+    .risk.danger{ background: rgba(239,68,68,.10); border-color: rgba(239,68,68,.20); color:#b91c1c; }
 
-    /* --- PREMIUM TABLE --- */
-    .data-card {
-      background: rgba(255,255,255,0.75);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      border-radius: 24px;
-      padding: 28px;
-      box-shadow: 0 10px 40px -10px rgba(15, 23, 42, 0.08);
+    .week-strip{
+      display:grid;
+      grid-template-columns: repeat(7, minmax(0,1fr));
+      gap: 10px;
+      margin-top: 10px;
     }
-    .data-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 16px;
+    .day{
+      border-radius: 16px;
+      border:1px solid rgba(15,23,42,.08);
+      background: rgba(255,255,255,.60);
+      padding: 10px;
+      min-height: 90px;
     }
-    .data-table th, .data-table td {
-      padding: 16px 20px;
-      text-align: left;
-      border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+    .day-top{ display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px; }
+    .dow{ font-size:11px; font-weight:950; color:var(--muted2); letter-spacing:.1em; }
+    .dnum{ font-size:14px; font-weight:950; }
+    .ev-pill{
+      display:block;
+      padding:6px 8px;
+      border-radius: 12px;
+      font-size:12px;
+      font-weight:800;
+      color: var(--text);
+      border:1px solid rgba(15,23,42,.08);
+      background: rgba(255,255,255,.72);
+      margin-top: 6px;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
-    .data-table th {
-      font-size: 12px;
-      font-weight: 800;
-      color: #64748b;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      background: rgba(15, 23, 42, 0.02);
-    }
-    .data-table tr { transition: background 0.2s; }
-    .data-table tr:hover td { background: rgba(255, 255, 255, 0.6); }
-    .data-table td { font-size: 15px; font-weight: 600; color: #0f172a; }
+    .ev-pill.exam{ border-color: rgba(220,38,38,.22); background: rgba(220,38,38,.08); color:#991b1b; }
+    .ev-pill.deadline{ border-color: rgba(79,70,229,.22); background: rgba(79,70,229,.10); color:#3730a3; }
 
-    /* --- BADGES & STATUSES --- */
-    .status-badge {
-      display: inline-flex; align-items: center; padding: 6px 12px;
-      border-radius: 999px; font-size: 12px; font-weight: 800;
-      text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid transparent;
+    .upcoming-list{ margin-top:12px; display:grid; gap:10px; }
+    .up-item{
+      display:flex; justify-content:space-between; align-items:center; gap:12px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      border:1px solid rgba(15,23,42,.08);
+      background: rgba(255,255,255,.65);
     }
-    .status-active { background: rgba(79, 70, 229, 0.1); color: #4f46e5; border-color: rgba(79, 70, 229, 0.2); }
-    .status-good { background: rgba(16, 185, 129, 0.12); color: #10b981; border-color: rgba(16, 185, 129, 0.2); }
-    .status-warn { background: rgba(245, 158, 11, 0.12); color: #d97706; border-color: rgba(245, 158, 11, 0.2); }
-    .status-danger { background: rgba(239, 68, 68, 0.12); color: #ef4444; border-color: rgba(239, 68, 68, 0.2); }
-    .status-pending { background: rgba(15, 23, 42, 0.05); color: #64748b; border: 1px dashed rgba(15, 23, 42, 0.2); transition: all 0.4s ease; }
+    .up-item strong{ font-weight:950; }
+    .up-meta{ color:var(--muted); font-weight:800; font-size:13px; }
 
-    /* --- ANIMATIONS --- */
-    .btn-scanning {
-      position: relative; overflow: hidden; pointer-events: none; opacity: 0.8;
-    }
-    .btn-scanning::after {
-      content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-      animation: scanSweep 1s infinite linear;
-    }
-    @keyframes scanSweep { 0% { left: -100%; } 100% { left: 200%; } }
-    
-    .stagger-row { opacity: 0; transform: translateY(10px); animation: fadeUpRow 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-    @keyframes fadeUpRow { to { opacity: 1; transform: translateY(0); } }
-
-    .course-icon {
-      width: 36px; height: 36px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center;
-      background: rgba(79, 70, 229, 0.1); color: #4f46e5; font-weight: 800; font-size: 14px; margin-right: 12px; vertical-align: middle; border: 1px solid rgba(79, 70, 229, 0.2);
+    @media (max-width: 900px){
+      .kpi-grid{ grid-template-columns: 1fr; }
+      .week-strip{ grid-template-columns: repeat(2, minmax(0,1fr)); }
     }
   </style>
 </head>
+
 <body>
   <div class="bg-blob blob-1" aria-hidden="true"></div>
   <div class="bg-blob blob-2" aria-hidden="true"></div>
@@ -134,147 +139,194 @@
         <span class="brand-dot"></span>
         <span class="brand-name">Dropout Analyzer</span>
       </div>
+
       <nav class="nav">
-        <a class="nav-item active" href="{{url_for('student_views.dashboard')}}">Dashboard</a>
-        <a class="nav-item" href="{{url_for('student_views.courses')}}">Courses</a>
-        <a class="nav-item" href="{{url_for('student_views.calender')}}">Calendar</a>
-        <a class="nav-item" href="{{url_for('student_views.settings')}}">Settings</a>
+        <a class="nav-item {% if active_page=='dashboard' %}active{% endif %}" href="{{ url_for('student_views.dashboard') }}">Dashboard</a>
+        <a class="nav-item {% if active_page=='courses' %}active{% endif %}" href="{{ url_for('student_views.courses') }}">Courses</a>
+        <a class="nav-item {% if active_page=='calendar' %}active{% endif %}" href="{{ url_for('student_views.calender') }}">Calendar</a>
+        <a class="nav-item {% if active_page=='settings' %}active{% endif %}" href="{{ url_for('student_views.student_settings') }}">Settings</a>
       </nav>
     </div>
   </header>
 
-  <main class="page" style="max-width:1100px; margin:40px auto; padding:0 24px;">
-    
-   <section class="dashboard-grid">
-      <div class="metric-card">
-        <div class="metric-header">
-          <span class="metric-title">Enrolled Courses</span>
-          <span class="status-badge status-active">Active</span>
-        </div>
-        <div class="metric-value">{{ total_courses }}</div>
-        <div class="metric-footer">Current Semester</div>
-      </div>
-      
-      <div class="metric-card">
-        <div class="metric-header">
-          <span class="metric-title">Overall Attendance</span>
-          <span class="status-badge status-good">Good</span>
-        </div>
-        <div class="metric-value">{{ overall_attendance }}%</div>
-        <div class="metric-footer">Across all courses</div>
+  <main class="wrap">
+    <section class="page-head">
+      <div>
+        <h1 class="title">Student Dashboard</h1>
+        <p class="subtitle">Track attendance, grades, and upcoming deadlines.</p>
       </div>
 
-      <div class="metric-card">
-        <div class="metric-header">
-          <span class="metric-title">Active Alerts</span>
-          <span id="alert-badge" class="status-badge status-pending">Pending Scan</span>
-        </div>
-        <div class="metric-value" id="alert-count">-</div>
-        <div class="metric-footer">Run scan to view alerts</div>
+      <div class="actions">
+        <button id="scan-btn" class="btn btn-primary small" type="button">Run Scan</button>
+        <a class="btn btn-ghost small" href="{{ url_for('student_views.courses') }}">View Courses</a>
       </div>
     </section>
-    <section class="data-card">
-      <div style="margin-bottom: 20px;">
-        <h2 style="font-size: 22px; font-weight: 800; color: #0f172a; margin: 0;">Course Risk Analysis</h2>
-        <p style="color: #64748b; font-weight: 600; margin: 6px 0 0; font-size: 15px;">Trigger a scan to reveal AI-driven risk predictions.</p>
+
+    <section class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-top">
+          <span class="kpi-k">Enrolled Courses</span>
+          <span class="pill">ACTIVE</span>
+        </div>
+        <div class="kpi-num">{{ total_courses }}</div>
+        <div class="kpi-foot">Current semester</div>
       </div>
-      
-      <div style="overflow-x: auto;">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Course Name</th>
-              <th>Course Code</th>
-              <th>Attendance</th>
-              <th>Current Grade</th>
-              <th>Risk Level</th>
-            </tr>
-          </thead>
-          <tbody id="course-table-body">
-            {% if courses %}
-              {% for course in courses %}
-              <tr class="stagger-row" >
-                <td><span class="course-icon">{{ course.icon }}</span> {{ course.course_name }}</td>
-                <td>{{ course.course_code }}</td>
-                <td>{{ course.attendance }}%</td>
-                <td>{{ course.grade }}%</td>
-                <td>
-                  <span class="status-badge status-pending risk-target" 
-                        data-target-class="{{ course.target_class }}" 
-                        data-target-text="{{ course.target_text }}">
-                    Awaiting Scan
-                  </span>
-                </td>
-              </tr>
-              {% endfor %}
-            {% else %}
+
+      <div class="kpi">
+        <div class="kpi-top">
+          <span class="kpi-k">Overall Attendance</span>
+          <span class="pill good">TREND</span>
+        </div>
+        <div class="kpi-num">{{ overall_attendance }}%</div>
+        <div class="kpi-foot">Across all courses</div>
+      </div>
+
+      <div class="kpi">
+        <div class="kpi-top">
+          <span class="kpi-k">Risk Alerts</span>
+          {% if alert_count and alert_count > 0 %}
+            <span class="pill danger">ACTION</span>
+          {% else %}
+            <span class="pill good">CLEAR</span>
+          {% endif %}
+        </div>
+        <div class="kpi-num">{{ alert_count }}</div>
+        <div class="kpi-foot">Moderate/High courses</div>
+      </div>
+    </section>
+
+    <section class="grid-2">
+      <div class="card">
+        <div class="table-head">
+          <div>
+            <h2>Course Risk Analysis</h2>
+            <div class="muted">Computed from attendance + grades.</div>
+          </div>
+        </div>
+
+        <div style="overflow-x:auto;">
+          <table class="tbl">
+            <thead>
               <tr>
-                <td colspan="5" style="text-align: center; color: #64748b; padding: 32px; font-weight: 600;">
-                  You are not enrolled in any courses yet.<br>
-                  <a href="{{url_for('student_views.courses')}}" style="color: #4f46e5; text-decoration: underline; margin-top: 8px; display: inline-block;">Enroll in a course to get started.</a>
-                </td>
+                <th>Course</th>
+                <th>Instructor</th>
+                <th>Attendance</th>
+                <th>Grade</th>
+                <th>Risk</th>
               </tr>
-            {% endif %}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {% if courses %}
+                {% for c in courses %}
+                  <tr>
+                    <td>
+                      <div class="course-cell">
+                        <span class="course-icon">{{ c.icon }}</span>
+                        <div>
+                          <div style="font-weight:950;">{{ c.course_name }}</div>
+                          <div class="muted" style="font-size:13px;">{{ c.course_code }}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="muted">{{ c.instructor_name }}</td>
+                    <td>{{ c.attendance }}%</td>
+                    <td>{{ c.grade }}%</td>
+                    <td>
+                      <span class="risk {{ c.risk_level }}">
+                        {{ c.risk_text }}
+                      </span>
+                    </td>
+                  </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="5" class="muted" style="text-align:center; padding:22px;">
+                    You are not enrolled in any courses yet.
+                    <div style="margin-top:10px;">
+                      <a class="link" href="{{ url_for('student_views.courses') }}">Enroll in a course to get started.</a>
+                    </div>
+                  </td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+ 
+      <div class="card">
+        <div class="table-head">
+          <div>
+            <h2>This Week</h2>
+            <div class="muted">Next 7 days + upcoming events.</div>
+          </div>
+          <a class="btn btn-ghost small" href="{{ url_for('student_views.calender') }}">Open Calendar</a>
+        </div>
+
+        <div class="week-strip">
+          {% for d in week_days %}
+            <div class="day">
+              <div class="day-top">
+                <span class="dow">{{ d.dow }}</span>
+                <span class="dnum">{{ d.day }}</span>
+              </div>
+
+              {% if d.count == 0 %}
+                <div class="muted" style="font-size:12px;">No events</div>
+              {% else %}
+                {% for ev in d.events %}
+                  {% set cls = 'deadline' %}
+                  {% if (ev.type or '')|lower == 'exam' %}{% set cls = 'exam' %}{% endif %}
+                  <span class="ev-pill {{ cls }}">{{ ev.title }}</span>
+                {% endfor %}
+                {% if d.count > 2 %}
+                  <div class="muted" style="font-size:12px; margin-top:6px;">+{{ d.count - 2 }} more</div>
+                {% endif %}
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+
+        <div style="margin-top:14px;">
+          <div style="font-weight:950;">Upcoming</div>
+
+          {% if upcoming_7 %}
+            <div class="upcoming-list">
+              {% for ev in upcoming_7[:6] %}
+                <div class="up-item">
+                  <div>
+                    <strong>{{ ev.title }}</strong>
+                    <div class="up-meta">{{ ev.type }}</div>
+                  </div>
+                  <div class="up-meta">{{ ev.pretty }}</div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="muted" style="margin-top:8px;">No upcoming events. Add deadlines or exams in Calendar.</div>
+          {% endif %}
+        </div>
       </div>
     </section>
-
   </main>
 
   <script>
-    function runRiskScan() {
-      const scanBtn = document.getElementById('scan-btn');
-      const riskBadges = document.querySelectorAll('.risk-target');
-      const alertBadge = document.getElementById('alert-badge');
-      const alertCount = document.getElementById('alert-count');
-      
-      scanBtn.classList.add('btn-scanning');
-      scanBtn.innerHTML = `
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px; animation: spin 1s linear infinite;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
-        Analyzing Data...
-      `;
-      scanBtn.disabled = true;
 
-      setTimeout(() => {
-        
-        let highRiskCount = 0;
-        riskBadges.forEach((badge, index) => {
-          setTimeout(() => {
-            const targetClass = badge.getAttribute('data-target-class');
-            const targetText = badge.getAttribute('data-target-text');
-            
-            badge.className = targetClass;
-            badge.innerText = targetText;
-            
-            if (targetClass.includes('danger') || targetClass.includes('warn')) {
-              highRiskCount++;
-            }
-          }, index * 150); 
-        });
+    document.addEventListener("DOMContentLoaded", () => {
+      const btn = document.getElementById("scan-btn");
+      if(!btn) return;
 
+      btn.addEventListener("click", () => {
+        btn.disabled = true;
+        btn.classList.add("btn-scanning");
+        btn.textContent = "Analyzing...";
         setTimeout(() => {
-          alertCount.innerText = highRiskCount;
-          if(highRiskCount > 0) {
-            alertBadge.className = 'status-badge status-danger';
-            alertBadge.innerText = 'Action Needed';
-          } else {
-            alertBadge.className = 'status-badge status-good';
-            alertBadge.innerText = 'All Clear';
-          }
-          
-          scanBtn.classList.remove('btn-scanning');
-          scanBtn.innerHTML = `
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-            Scan Complete
-          `;
-          scanBtn.style.background = '#10b981';
-          scanBtn.style.borderColor = '#10b981';
-          scanBtn.style.boxShadow = '0 8px 20px rgba(16, 185, 129, 0.3)';
-        }, riskBadges.length * 150);
-
-      }, 1500);
-    }
+          btn.classList.remove("btn-scanning");
+          btn.textContent = "Scan Complete";
+          btn.disabled = false;
+        }, 1200);
+      });
+    });
   </script>
 </body>
 </html>
