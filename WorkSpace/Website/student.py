@@ -207,7 +207,7 @@ def update_settings():
 
     db.session.commit()
     flash("Profile updated successfully!", "success")
-    return redirect(url_for('student_views.settings', tab="profile"))
+    return redirect(url_for('student_views.student_settings', tab="profile"))
 
 @student_views.route('/api/events', methods=['GET', 'POST'])
 @login_required
