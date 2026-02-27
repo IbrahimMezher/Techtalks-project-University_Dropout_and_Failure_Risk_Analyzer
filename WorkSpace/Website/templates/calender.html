@@ -6,14 +6,18 @@
   <title>Calendar</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
   <style>
-    .calendar-day { min-height: 110px; padding: 10px; border-radius: 16px; background: rgba(255,255,255,0.55); border: 1px solid var(--line); }
-    .calendar-day.today { border-color: var(--primary); background: var(--primarySoft); }
-    .day-number { font-weight: 950; color: var(--muted); margin-bottom: 8px; }
+    .calendar-day { min-height: 110px; padding: 12px; border-radius: 14px; background: linear-gradient(135deg, rgba(255,255,255,.7), rgba(255,255,255,.5)); border: 1.1px solid rgba(15,23,42,.08); transition: all .25s ease; }
+    .calendar-day:hover { border-color: rgba(79,70,229,.15); background: linear-gradient(135deg, rgba(255,255,255,.85), rgba(255,255,255,.7)); box-shadow: 0 4px 16px rgba(79,70,229,.08); }
+    .calendar-day.today { border-color: var(--primary); background: linear-gradient(135deg, rgba(79,70,229,.15), rgba(79,70,229,.08)); }
+    .day-number { font-weight: 960; color: var(--text); margin-bottom: 8px; font-size: 16px; }
     .event-badge {
-      background: var(--primary); color: white; padding: 6px 8px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary), #7c3aed); color: white; padding: 7px 9px; border-radius: 9px;
       font-size: 11px; font-weight: 900; margin-bottom: 6px; display: block;
       text-overflow: ellipsis; overflow: hidden; white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(79,70,229,.2);
+      transition: all .2s ease;
     }
+    .event-badge:hover { transform: translateY(-1px); }
   </style>
 </head>
 
@@ -41,25 +45,25 @@
     <div class="card" style="margin-bottom:24px;">
       <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
         <div>
-          <h1>Academic Calendar</h1>
-          <p class="subtext">Track exams, deadlines, and key dates.</p>
+          <h1 style="font-size:32px; font-weight:960; letter-spacing:-.5px;">Academic Calendar</h1>
+          <p class="subtext" style="font-size: 15px; font-weight:700;">Track exams, deadlines, and key dates.</p>
         </div>
         <button class="btn btn-primary" type="button" onclick="addEventPrompt()">+ Add Event</button>
       </div>
     </div>
 
     <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px; gap:10px; flex-wrap:wrap;">
-        <button id="prevMonth" class="btn btn-ghost" type="button" >← Prev</button>
-        <h2 id="monthTitle" style="margin:0;"></h2>
-        <button id="nextMonth" class="btn btn-ghost" type="button" >Next →</button>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px; gap:10px; flex-wrap:wrap;">
+        <button id="prevMonth" class="btn btn-ghost" type="button" style="font-weight: 850; transition: all .2s ease;">← Prev</button>
+        <h2 id="monthTitle" style="margin:0; font-size: 24px; font-weight: 960; letter-spacing: -0.3px;"></h2>
+        <button id="nextMonth" class="btn btn-ghost" type="button" style="font-weight: 850; transition: all .2s ease;">Next →</button>
       </div>
 
-      <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:10px; text-align:center; font-weight:900; color:var(--muted); margin-bottom:10px;">
+      <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:10px; text-align:center; font-weight:950; color:var(--text); margin-bottom:12px; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase;">
         <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
       </div>
 
-      <div id="calendarGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:10px;"></div>
+      <div id="calendarGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:12px;"></div>
     </div>
   </div>
 

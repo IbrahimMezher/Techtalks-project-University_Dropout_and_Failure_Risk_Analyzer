@@ -191,6 +191,131 @@ def add_attendance():
 
     return redirect(url_for('student_views.courses'))
 
+@student_views.route('/edit-enrollment', methods=['POST'])
+@login_required
+def edit_enrollment():
+    enrollment_id = request.form.get('enrollment_id')
+    enrollment = Enrollment.query.filter_by(id=enrollment_id, user_id=current_user.id).first()
+
+    if enrollment:
+        course_name = request.form.get('course_name')
+        course_code = request.form.get('course_code')
+        
+        enrollment.course.course_name = course_name
+        enrollment.course.course_code = course_code
+        db.session.commit()
+        flash("Enrollment updated successfully!", "success")
+
+    return redirect(url_for('student_views.courses'))
+
+@student_views.route('/delete-enrollment', methods=['POST'])
+@login_required
+def delete_enrollment():
+    enrollment_id = request.form.get('enrollment_id')
+    enrollment = Enrollment.query.filter_by(id=enrollment_id, user_id=current_user.id).first()
+
+    if enrollment:
+        db.session.delete(enrollment)
+        db.session.commit()
+        flash("Enrollment deleted successfully!", "success")
+
+    return redirect(url_for('student_views.courses'))
+
+@student_views.route('/edit-attendance', methods=['POST'])
+@login_required
+def edit_attendance():
+    attendance_id = request.form.get('attendance_id')
+    attendance = Attendance.query.get(attendance_id)
+
+    if attendance:
+        enrollment = Enrollment.query.filter_by(id=attendance.enrollment_id, user_id=current_user.id).first()
+        if enrollment:
+            attendance.date = datetime.strptime(request.form.get('date'), '%Y-%m-%d').date()
+            attendance.status = request.form.get('status')
+            
+            all_att = Attendance.query.filter_by(enrollment_id=enrollment.id).all()
+            if all_att:
+                present_days = sum(1 for a in all_att if a.status == 'present')
+                enrollment.attendance_rate = (present_days / len(all_att)) * 100
+            
+            db.session.commit()
+            flash("Attendance updated successfully!", "success")
+
+    return redirect(url_for('student_views.courses'))
+
+@student_views.route('/delete-attendance', methods=['POST'])
+@login_required
+def delete_attendance():
+    attendance_id = request.form.get('attendance_id')
+    attendance = Attendance.query.get(attendance_id)
+
+    if attendance:
+        enrollment = Enrollment.query.filter_by(id=attendance.enrollment_id, user_id=current_user.id).first()
+        if enrollment:
+            db.session.delete(attendance)
+            
+            all_att = Attendance.query.filter_by(enrollment_id=enrollment.id).all()
+            if all_att:
+                present_days = sum(1 for a in all_att if a.status == 'present')
+                enrollment.attendance_rate = (present_days / len(all_att)) * 100
+            else:
+                enrollment.attendance_rate = 0
+            
+            db.session.commit()
+            flash("Attendance deleted successfully!", "success")
+
+    return redirect(url_for('student_views.courses'))
+
+@student_views.route('/edit-grade', methods=['POST'])
+@login_required
+def edit_grade():
+    grade_id = request.form.get('grade_id')
+    grade = Grade.query.get(grade_id)
+
+    if grade:
+        enrollment = Enrollment.query.filter_by(id=grade.enrollment_id, user_id=current_user.id).first()
+        if enrollment:
+            grade.exam_name = request.form.get('exam_name')
+            grade.score = float(request.form.get('score'))
+            grade.weight = float(request.form.get('weight'))
+            grade.date_recorded = datetime.strptime(request.form.get('date'), '%Y-%m-%d').date()
+            
+            all_grades = Grade.query.filter_by(enrollment_id=enrollment.id).all()
+            total_weight = sum(g.weight for g in all_grades)
+            if total_weight > 0:
+                weighted_sum = sum(g.score * (g.weight / 100) for g in all_grades)
+                enrollment.current_grade = (weighted_sum / (total_weight / 100))
+            
+            db.session.commit()
+            flash("Grade updated successfully!", "success")
+
+    return redirect(url_for('student_views.courses'))
+
+@student_views.route('/delete-grade', methods=['POST'])
+@login_required
+def delete_grade():
+    grade_id = request.form.get('grade_id')
+    grade = Grade.query.get(grade_id)
+
+    if grade:
+        enrollment = Enrollment.query.filter_by(id=grade.enrollment_id, user_id=current_user.id).first()
+        if enrollment:
+            db.session.delete(grade)
+            
+            all_grades = Grade.query.filter_by(enrollment_id=enrollment.id).all()
+            if all_grades:
+                total_weight = sum(g.weight for g in all_grades)
+                if total_weight > 0:
+                    weighted_sum = sum(g.score * (g.weight / 100) for g in all_grades)
+                    enrollment.current_grade = (weighted_sum / (total_weight / 100))
+            else:
+                enrollment.current_grade = 0
+            
+            db.session.commit()
+            flash("Grade deleted successfully!", "success")
+
+    return redirect(url_for('student_views.courses'))
+
 @student_views.route('/update-settings', methods=['POST'])
 @login_required
 def update_settings():
