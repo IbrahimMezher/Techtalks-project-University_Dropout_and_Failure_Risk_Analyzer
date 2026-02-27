@@ -1,33 +1,59 @@
-const monthTitle = document.getElementById("monthTitle");
-const calendarGrid = document.getElementById("calendarGrid");
+
+
+const monthTitle = document.getElementById('monthTitle');
+const calendarGrid = document.getElementById('calendarGrid');
 
 let currentDate = new Date();
+let userEvents = [];
+
+async function fetchEvents() {
+  try {
+    const response = await fetch('/api/events');
+    if (response.ok) {
+      userEvents = await response.json();
+      renderCalendar();
+    }
+  } catch (e) {
+    console.error('Failed to fetch events', e);
+  }
+}
 
 function renderCalendar() {
-  calendarGrid.innerHTML = "";
+  calendarGrid.innerHTML = '';
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
+  monthTitle.innerText = new Date(year, month).toLocaleString('default', { month: 'long', year: 'numeric' });
+
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  monthTitle.textContent = currentDate.toLocaleString("default", {
-    month: "long",
-    year: "numeric",
-  });
-
   for (let i = 0; i < firstDay; i++) {
-    const empty = document.createElement("div");
+    const empty = document.createElement('div');
     calendarGrid.appendChild(empty);
   }
 
-  for (let day = 1; day <= daysInMonth; day++) {
-    const cell = document.createElement("div");
-    cell.className = "card";
-    cell.style.padding = "12px";
-    cell.style.textAlign = "center";
-    cell.textContent = day;
+  let today = new Date();
+  for (let i = 1; i <= daysInMonth; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'calendar-day';
+
+    if (year === today.getFullYear() && month === today.getMonth() && i === today.getDate()) {
+      cell.classList.add('today');
+    }
+
+    let dayStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+    let html = `<div class="day-number">${i}</div>`;
+
+    let dayEvents = userEvents.filter(e => e.date === dayStr);
+    dayEvents.forEach(ev => {
+      let t = (ev.type || '').toLowerCase();
+      let color = (t === 'exam') ? 'var(--danger)' : 'var(--primary)';
+      html += `<div class="event-badge" style="background:${color}">${ev.title}</div>`;
+    });
+
+    cell.innerHTML = html;
     calendarGrid.appendChild(cell);
   }
 }
@@ -37,14 +63,25 @@ function changeMonth(dir) {
   renderCalendar();
 }
 
-document.getElementById("prevMonth").onclick = () => {
-  currentDate.setMonth(currentDate.getMonth() - 1);
-  renderCalendar();
-};
 
-document.getElementById("nextMonth").onclick = () => {
-  currentDate.setMonth(currentDate.getMonth() + 1);
-  renderCalendar();
-};
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('prevMonth').onclick = () => changeMonth(-1);
+  document.getElementById('nextMonth').onclick = () => changeMonth(1);
 
-renderCalendar();
+  renderCalendar();
+  fetchEvents();
+});
+
+function addEventPrompt() {
+  let title = prompt('Event Title (e.g., Math Midterm):');
+  let date = prompt('Date (YYYY-MM-DD):');
+  let type = prompt('Type (Exam/Deadline/Lecture):', 'Deadline');
+
+  if (title && date && type) {
+    fetch('/api/events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, date, type })
+    }).then(() => fetchEvents());
+  }
+}
