@@ -50,9 +50,9 @@
 
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px; gap:10px; flex-wrap:wrap;">
-        <button class="btn btn-ghost" type="button" onclick="changeMonth(-1)">← Prev</button>
+        <button id="prevMonth" class="btn btn-ghost" type="button" >← Prev</button>
         <h2 id="monthTitle" style="margin:0;"></h2>
-        <button class="btn btn-ghost" type="button" onclick="changeMonth(1)">Next →</button>
+        <button id="nextMonth" class="btn btn-ghost" type="button" >Next →</button>
       </div>
 
       <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:10px; text-align:center; font-weight:900; color:var(--muted); margin-bottom:10px;">
@@ -125,6 +125,10 @@
       currentDate.setMonth(currentDate.getMonth() + dir);
       renderCalendar();
     }
+
+    // honi zedit shi la ya3mol connect ma3 el next button.
+    document.getElementById("prevMonth").onclick = () => changeMonth(-1);
+    document.getElementById("nextMonth").onclick = () => changeMonth(1);
 
     function addEventPrompt() {
       let title = prompt("Event Title (e.g., Math Midterm):");
