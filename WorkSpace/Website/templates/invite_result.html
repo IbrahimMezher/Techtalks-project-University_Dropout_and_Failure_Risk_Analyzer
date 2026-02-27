@@ -50,7 +50,7 @@
           {% if current_user.role == "instructor" %}
             <a class="btn btn-primary" href="{{ url_for('instructor.instructor_log') }}">Continue</a>
           {% elif current_user.role == "student" %}
-            <a class="btn btn-primary" href="{{ url_for('student_views.settings') }}">Continue</a>
+            <a class="btn btn-primary" href="{{ url_for('student_views.student_settings') }}">Continue</a>
           {% else %}
             <a class="btn btn-primary" href="{{ url_for('views.home') }}">Continue</a>
           {% endif %}

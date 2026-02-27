@@ -6,16 +6,24 @@
   <title>My Courses</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
   <style>
-    .panel { border:1px solid var(--line); padding:16px; border-radius:18px; background:var(--glass); backdrop-filter:blur(10px); margin-bottom: 24px;}
+    .panel { border:1px solid rgba(15,23,42,.08); padding:20px; border-radius:18px; background: linear-gradient(135deg, rgba(255,255,255,0.7), rgba(255,255,255,0.5)); backdrop-filter:blur(10px); margin-bottom: 24px; box-shadow: 0 4px 16px rgba(15,23,42,.06); }
     .row { display:flex; gap:12px; align-items:center; margin-bottom:12px; justify-content: space-between; }
-    .list { display:flex; flex-direction:column; gap:8px; }
-    .course-item { display:flex; justify-content:space-between; align-items:center; padding:16px; border-radius:18px; background: rgba(255,255,255,0.8); border:1px solid var(--line); transition: all .2s ease; }
-    .course-item:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
-    .modal { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.4); backdrop-filter:blur(4px); z-index: 999; }
-    .modal-card { background:white; padding:24px; border-radius:18px; width:420px; max-width:94%; box-shadow: var(--shadow); animation: popIn .2s ease; }
+    .list { display:flex; flex-direction:column; gap:10px; }
+    .course-item { display:flex; justify-content:space-between; align-items:center; padding:16px; border-radius:14px; background: linear-gradient(135deg, rgba(255,255,255,0.8), rgba(255,255,255,0.6)); border:1.1px solid rgba(15,23,42,.08); transition: all .25s cubic-bezier(0.4, 0, 0.2, 1); }
+    .course-item:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(15,23,42,.1), 0 4px 12px rgba(79,70,229,.06); border-color: rgba(79,70,229,.15); }
+    .modal { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.5); backdrop-filter:blur(6px); z-index: 999; }
+    .modal-card { background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.9)); padding:28px; border-radius:18px; width:420px; max-width:94%; box-shadow: 0 20px 60px rgba(15,23,42,.15); border: 1px solid rgba(15,23,42,.08); animation: popIn .2s ease; }
     .fade-in-up { opacity:0; transform: translateY(8px); animation: fadeUp .36s ease forwards; }
     @keyframes fadeUp { to { opacity:1; transform: translateY(0); } }
-    select{ width:100%; padding:12px; border-radius:14px; border:1px solid rgba(15,23,42,.12); background: rgba(255,255,255,.82); }
+    select{ width:100%; padding:13px; border-radius:14px; border:1.1px solid rgba(15,23,42,.12); background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.75)); font-weight: 600; transition: all .2s ease; }
+    select:focus { border-color: rgba(79,70,229,.3); box-shadow: 0 0 0 4px rgba(79,70,229,.08); }
+    .status-badge { display:inline-flex; padding:7px 12px; border-radius:999px; font-size:11px; font-weight:900; border:1.1px solid; letter-spacing: 0.5px; }
+    .status-good { background: linear-gradient(135deg, rgba(16,185,129,.15), rgba(16,185,129,.08)); border-color: rgba(16,185,129,.35); color:#067857; }
+    .status-danger { background: linear-gradient(135deg, rgba(239,68,68,.15), rgba(239,68,68,.08)); border-color: rgba(239,68,68,.32); color:#a21d1d; }
+    .row strong { font-size: 18px; font-weight: 960; }
+    .muted { color:var(--muted2); font-weight:700; font-size: 14px; }
+    h3 { font-weight: 960; letter-spacing: -0.3px; color: var(--text); }
+    .action-btns { display:flex; gap:6px; }\n    .btn.btn-edit { padding: 8px 12px; font-size: 12px; font-weight: 850; border-radius: 10px; }\n    .btn-edit { background: rgba(79,70,229,.12); color: var(--primary); border: 1.1px solid rgba(79,70,229,.25); }\n    .btn-edit:hover { background: rgba(79,70,229,.18); border-color: rgba(79,70,229,.35); }\n    .btn-delete { background: rgba(239,68,68,.12); color: #a21d1d; border: 1.1px solid rgba(239,68,68,.25); }\n    .btn-delete:hover { background: rgba(239,68,68,.18); border-color: rgba(239,68,68,.35); }
   </style>
 </head>
 <body>
@@ -42,8 +50,8 @@
 
     <div class="card" style="margin-bottom:24px;">
       <div class="card-header" style="margin:0;">
-        <h1>My Courses</h1>
-        <p class="subtext">Manage your enrollments, attendance, and grades.</p>
+        <h1 style="font-size:32px; font-weight:960; letter-spacing:-.5px;">My Courses</h1>
+        <p class="subtext" style="font-size: 15px; font-weight:700;">Manage your enrollments, attendance, and grades.</p>
       </div>
     </div>
 
@@ -69,13 +77,17 @@
           {% if enrollments %}
             {% for e in enrollments %}
               <div class="course-item fade-in-up">
-                <div>
+                <div style="flex: 1;">
                   <h3 style="margin:0 0 4px 0; font-size:18px;">{{ e.course.course_name }}</h3>
                   <p class="muted" style="margin:0; font-size:14px;">
                     Code: {{ e.course.course_code }} &bull;
                     Attendance: {{ "%.1f"|format(e.attendance_rate) }}% &bull;
                     Grade: {{ "%.1f"|format(e.current_grade) }}%
                   </p>
+                </div>
+                <div class="action-btns">
+                  <button class="btn btn-edit" type="button" onclick="openEditEnroll({{ e.id }}, &quot;{{ e.course.course_name }}&quot;, &quot;{{ e.course.course_code }}&quot;)">Edit</button>
+                  <button class="btn btn-delete" type="button" onclick="if(confirm('Delete this enrollment?')) { deleteEnroll({{ e.id }}) }">Delete</button>
                 </div>
               </div>
             {% endfor %}
@@ -102,10 +114,18 @@
             <div class="list" style="margin-top: 12px;">
               {% for a in e.attendance_records %}
                 <div class="course-item" style="padding: 12px 16px;">
-                  <span style="font-weight: 600;">{{ a.date.strftime('%B %d, %Y') }}</span>
-                  <span class="status-badge {% if a.status == 'present' %}status-good{% else %}status-danger{% endif %}">
-                    {{ a.status | capitalize }}
-                  </span>
+                  <div style="flex: 1;">
+                    <span style="font-weight: 600;">{{ a.date.strftime('%B %d, %Y') }}</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="status-badge {% if a.status == 'present' %}status-good{% else %}status-danger{% endif %}">
+                      {{ a.status | capitalize }}
+                    </span>
+                    <div class="action-btns">
+                      <button class="btn btn-edit" type="button" onclick="openEditAttendance({{ a.id }}, {{ e.id }}, '{{ a.date.strftime('%Y-%m-%d') }}', '{{ a.status }}')">Edit</button>
+                      <button class="btn btn-delete" type="button" onclick="if(confirm('Delete this attendance record?')) { deleteAttendance({{ a.id }}) }">Del</button>
+                    </div>
+                  </div>
                 </div>
               {% else %}
                 <p class="muted" style="font-size: 13px;">No attendance recorded for this course.</p>
@@ -132,14 +152,20 @@
             <div class="list" style="margin-top: 12px;">
               {% for g in e.grades %}
                 <div class="course-item" style="padding: 12px 16px;">
-                  <div>
+                  <div style="flex: 1;">
                     <strong style="display: block; margin-bottom: 4px;">{{ g.exam_name }}</strong>
                     <span class="muted" style="font-size: 13px;">
                       Date: {{ g.date_recorded.strftime('%Y-%m-%d') }} &bull; Weight: {{ g.weight }}%
                     </span>
                   </div>
-                  <div style="font-size: 18px; font-weight: 900; color: var(--primary);">
-                    {{ g.score }} / 100
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="font-size: 18px; font-weight: 900; color: var(--primary);">
+                      {{ g.score }} / 100
+                    </div>
+                    <div class="action-btns">
+                      <button class="btn btn-edit" type="button" onclick="openEditGrade({{ g.id }}, {{ e.id }}, '{{ g.exam_name }}', {{ g.score }}, {{ g.weight }}, '{{ g.date_recorded.strftime('%Y-%m-%d') }}')">Edit</button>
+                      <button class="btn btn-delete" type="button" onclick="if(confirm('Delete this grade?'))  deleteGrade({{ g.id }}) ">Del</button>
+                    </div>
                   </div>
                 </div>
               {% else %}
@@ -235,8 +261,163 @@
       </form>
     </div>
 
-  </div>
+    <!-- Edit Modals -->
+    <div id="modal-edit-enroll" class="modal" style="display:none;">
+      <form class="modal-card form" method="POST" action="{{ url_for('student_views.edit_enrollment') }}">
+        <h3>Edit Enrollment</h3>
+        <input type="hidden" id="edit-enroll-id" name="enrollment_id" />
+        <div class="field">
+          <label>Course Name</label>
+          <input id="edit-course-name" name="course_name" type="text" placeholder="e.g., Calculus I" required />
+        </div>
+        <div class="field">
+          <label>Course Code</label>
+          <input id="edit-course-code" name="course_code" type="text" placeholder="e.g., MATH101" required />
+        </div>
+        <div style="display:flex; gap:8px; margin-top:16px;">
+          <button type="submit" class="btn btn-primary" style="flex:1;">Save Changes</button>
+          <button type="button" class="btn btn-ghost" style="flex:1;" onclick="document.getElementById('modal-edit-enroll').style.display='none'">Cancel</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="modal-edit-attendance" class="modal" style="display:none;">
+      <form class="modal-card form" method="POST" action="{{ url_for('student_views.edit_attendance') }}">
+        <h3>Edit Attendance</h3>
+        <input type="hidden" id="edit-att-id" name="attendance_id" />
+        <div class="field">
+          <label>Attendance Date</label>
+          <input id="edit-att-date" name="date" type="date" required />
+        </div>
+        <div class="field">
+          <label>Status</label>
+          <select id="edit-att-status" name="status" required>
+            <option value="present">Present</option>
+            <option value="absent">Absent</option>
+          </select>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:16px;">
+          <button type="submit" class="btn btn-primary" style="flex:1;">Save Changes</button>
+          <button type="button" class="btn btn-ghost" style="flex:1;" onclick="document.getElementById('modal-edit-attendance').style.display='none'">Cancel</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="modal-edit-grade" class="modal" style="display:none;">
+      <form class="modal-card form" method="POST" action="{{ url_for('student_views.edit_grade') }}">
+        <h3>Edit Grade</h3>
+        <input type="hidden" id="edit-grade-id" name="grade_id" />
+        <div class="field">
+          <label>Exam Name</label>
+          <input id="edit-exam-name" name="exam_name" type="text" placeholder="e.g., Midterm 1" required />
+        </div>
+        <div style="display:flex; gap:12px;">
+          <div class="field" style="flex:1;">
+            <label>Score (0-100)</label>
+            <input id="edit-score" name="score" type="number" min="0" max="100" step="0.1" required />
+          </div>
+          <div class="field" style="flex:1;">
+            <label>Weight (%)</label>
+            <input id="edit-weight" name="weight" type="number" min="0" max="100" step="0.1" required />
+          </div>
+        </div>
+        <div class="field">
+          <label>Test Date</label>
+          <input id="edit-grade-date" name="date" type="date" required />
+        </div>
+        <div style="display:flex; gap:8px; margin-top:16px;">
+          <button type="submit" class="btn btn-primary" style="flex:1;">Save Changes</button>
+          <button type="button" class="btn btn-ghost" style="flex:1;" onclick="document.getElementById('modal-edit-grade').style.display='none'">Cancel</button>
+        </div>
+      </form>
+    </div>
 
   <script src="{{ url_for('static', filename='main.js') }}"></script>
-</body>
-</html>
+  <script>
+    // Edit Enroll Modal
+    function openEditEnroll(enrollId, courseName, courseCode) {
+      document.getElementById('edit-enroll-id').value = enrollId;
+      document.getElementById('edit-course-name').value = courseName;
+      document.getElementById('edit-course-code').value = courseCode;
+      document.getElementById('modal-edit-enroll').style.display = 'flex';
+    }
+
+    function deleteEnroll(enrollId) {
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = '{{ url_for("student_views.delete_enrollment") }}';
+      form.innerHTML = `<input type="hidden" name="enrollment_id" value="${enrollId}" />`;
+      document.body.appendChild(form);
+      form.submit();
+    }
+
+    // Edit Attendance Modal
+    function openEditAttendance(attId, enrollId, attDate, status) {
+      document.getElementById('edit-att-id').value = attId;
+      document.getElementById('edit-att-date').value = attDate;
+      document.getElementById('edit-att-status').value = status;
+      document.getElementById('modal-edit-attendance').style.display = 'flex';
+    }
+
+    function deleteAttendance(attId) {
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = '{{ url_for("student_views.delete_attendance") }}';
+      form.innerHTML = `<input type="hidden" name="attendance_id" value="${attId}" />`;
+      document.body.appendChild(form);
+      form.submit();
+    }
+
+    // Edit Grade Modal
+    function openEditGrade(gradeId, enrollId, examName, score, weight, dateRecorded) {
+      document.getElementById('edit-grade-id').value = gradeId;
+      document.getElementById('edit-exam-name').value = examName;
+      document.getElementById('edit-score').value = score;
+      document.getElementById('edit-weight').value = weight;
+      document.getElementById('edit-grade-date').value = dateRecorded;
+      document.getElementById('modal-edit-grade').style.display = 'flex';
+    }
+
+    function deleteGrade(gradeId) {
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = '{{ url_for("student_views.delete_grade") }}';
+      form.innerHTML = `<input type="hidden" name="grade_id" value="${gradeId}" />`;
+      document.body.appendChild(form);
+      form.submit();
+    }
+
+    // Tab Navigation
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('nav-courses').addEventListener('click', () => showPanel('courses'));
+      document.getElementById('nav-attendance').addEventListener('click', () => showPanel('attendance'));
+      document.getElementById('nav-grades').addEventListener('click', () => showPanel('grades'));
+
+      document.getElementById('open-enroll').addEventListener('click', () => {
+        document.getElementById('modal-enroll').style.display = 'flex';
+      });
+      document.getElementById('open-attendance').addEventListener('click', () => {
+        document.getElementById('modal-attendance').style.display = 'flex';
+      });
+      document.getElementById('open-resolve').addEventListener('click', () => {
+        document.getElementById('modal-resolve').style.display = 'flex';
+      });
+
+      // Close modals on background click
+      document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) {
+            modal.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    function showPanel(panel) {
+      const panels = ['courses', 'attendance', 'grades'];
+      panels.forEach(p => {
+        document.getElementById(`panel-${p}`).style.display = p === panel ? 'block' : 'none';
+        document.getElementById(`nav-${p}`).classList.toggle('active', p === panel);
+      });
+    }
+  </script>

@@ -12,18 +12,16 @@ db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = "NNVKKMMKDjsjdnnxznakjwhdhdn"
-    #hek 3arafna local db bas nent2el la mar7ale akbar se3eta ba3mlo URL
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
+    app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "")
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", "sqlite:///database.db")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     from datetime import timedelta
     #time la tdal remembered fik t7ot le badak ye
     #cookies hene feena ne3teber saved data jowa pc aw laptop
-    app.config['REMEMBER_COOCKIE_DURATION'] = timedelta(days=2)
-    #aymata fi browser yeb3at cookie eza false 3al local host eza true 3al https://
-    app.config['REMEMBER_COOCKIE_SECURE'] = False
-    #protection la2ano metel ma fi sql injection fi XSS injection 3aber js fa bnesta3mel hay la ma ye2dar 
-    app.config['REMEMBER_COOCKIE_HTTPONLY'] = True
+    app.config["REMEMBER_COOKIE_DURATION"] = timedelta(days=int(os.getenv("REMEMBER_COOKIE_DAYS", "2")))
+    app.config["REMEMBER_COOKIE_SECURE"] = os.getenv("REMEMBER_COOKIE_SECURE", "false").lower() == "true"
+    app.config["REMEMBER_COOKIE_HTTPONLY"] = True
+    app.config["REMEMBER_COOKIE_SAMESITE"] = os.getenv("REMEMBER_COOKIE_SAMESITE", "Lax")
     
     db.init_app(app)
 
