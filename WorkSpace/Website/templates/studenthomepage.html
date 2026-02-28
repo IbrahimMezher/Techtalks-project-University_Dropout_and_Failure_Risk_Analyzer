@@ -206,13 +206,11 @@
       <div class="kpi">
         <div class="kpi-top">
           <span class="kpi-k">Risk Alerts</span>
-          {% if alert_count and alert_count > 0 %}
-            <span class="pill danger">ACTION</span>
-          {% else %}
-            <span class="pill good">CLEAR</span>
-          {% endif %}
+          <span id="kpi-risk-pill" class="pill {% if alert_count and alert_count > 0 %}danger{% else %}good{% endif %}">
+            {% if alert_count and alert_count > 0 %}ACTION{% else %}CLEAR{% endif %}
+          </span>
         </div>
-        <div class="kpi-num">{{ alert_count }}</div>
+        <div id="kpi-risk-count" class="kpi-num">{{ alert_count }}</div>
         <div class="kpi-foot">Moderate/High courses</div>
       </div>
     </section>
@@ -237,7 +235,7 @@
                 <th>Risk</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="risk-table-body">
               {% if courses %}
                 {% for c in courses %}
                   <tr>
@@ -254,7 +252,7 @@
                     <td>{{ c.attendance }}%</td>
                     <td>{{ c.grade }}%</td>
                     <td>
-                      <span class="risk {{ c.risk_level }}">
+                      <span class="risk {{ c.target_class|replace('status-badge status-', '') }}">
                         {{ c.risk_text }}
                       </span>
                     </td>
@@ -339,14 +337,64 @@
       if(!btn) return;
 
       btn.addEventListener("click", () => {
+        const originalText = btn.textContent;
         btn.disabled = true;
         btn.classList.add("btn-scanning");
         btn.textContent = "Analyzing...";
-        setTimeout(() => {
-          btn.classList.remove("btn-scanning");
-          btn.textContent = "Scan Complete";
-          btn.disabled = false;
-        }, 1200);
+        
+        fetch('/run-scan')
+          .then(res => res.json())
+          .then(data => {
+            
+            const countEl = document.getElementById('kpi-risk-count');
+            const pillEl = document.getElementById('kpi-risk-pill');
+            
+            if(countEl) countEl.textContent = data.alerts.length;
+            
+            if(pillEl) {
+              if(data.alerts.length > 0) {
+                pillEl.className = 'pill danger';
+                pillEl.textContent = 'ACTION';
+              } else {
+                pillEl.className = 'pill good';
+                pillEl.textContent = 'CLEAR';
+              }
+            }
+
+            
+            const tbody = document.getElementById('risk-table-body');
+            if(tbody) {
+              tbody.innerHTML = '';
+              data.analysis.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                  <td>
+                    <div class="course-cell">
+                      <span class="course-icon">${item.icon}</span>
+                      <div>
+                        <div style="font-weight:950;">${item.course}</div>
+                        <div class="muted" style="font-size:13px;">${item.code || ''}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="muted">${item.instructor}</td>
+                  <td>${item.attendance}%</td>
+                  <td>${item.grade}%</td>
+                  <td><span class="risk ${item.risk_class}">${item.risk_text}</span></td>
+                `;
+                tbody.appendChild(tr);
+              });
+            }
+          })
+          .catch(err => console.error(err))
+          .finally(() => {
+            btn.classList.remove("btn-scanning");
+            btn.textContent = "Scan Complete";
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }, 2000);
+          });
       });
     });
   </script>
