@@ -349,9 +349,66 @@ def manage_events():
         db.session.commit()
         return jsonify({"status": "success"})
 
-    events = CalendarEvent.query.filter_by(user_id=current_user.id).all()
-    return jsonify([{
-        "title": e.title,
-        "date": e.event_date.strftime('%Y-%m-%d'),
-        "type": e.event_type
-    } for e in events])
+    
+    events_list = []
+
+    
+    manual_events = CalendarEvent.query.filter_by(user_id=current_user.id).all()
+    for e in manual_events:
+        events_list.append({
+            "id": e.id,
+            "title": e.title,
+            "date": e.event_date.strftime('%Y-%m-%d'),
+            "type": e.event_type,
+            "is_manual": True
+        })
+
+    
+    enrollments = Enrollment.query.filter_by(user_id=current_user.id).all()
+    for enr in enrollments:
+        course_name = enr.course.course_name if enr.course else "Course"
+
+       
+        for g in enr.grades:
+            if g.date_recorded:
+                events_list.append({
+                    "id": None,
+                    "title": f"{course_name} - {g.exam_name}",
+                    "date": g.date_recorded.strftime('%Y-%m-%d'),
+                    "type": "Exam",
+                    "is_manual": False
+                })
+
+        
+        for a in enr.attendance_records:
+            if a.date:
+                events_list.append({
+                    "id": None,
+                    "title": f"{course_name} - {a.status}",
+                    "date": a.date.strftime('%Y-%m-%d'),
+                    "type": "Attendance",
+                    "is_manual": False
+                })
+
+    return jsonify(events_list)
+
+@student_views.route('/api/events/<int:event_id>', methods=['PUT', 'DELETE'])
+@login_required
+def modify_event(event_id):
+    event = CalendarEvent.query.get_or_404(event_id)
+    if event.user_id != current_user.id:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    if request.method == 'DELETE':
+        db.session.delete(event)
+        db.session.commit()
+        return jsonify({"status": "deleted"})
+
+    if request.method == 'PUT':
+        data = request.json
+        event.title = data.get('title', event.title)
+        if 'date' in data:
+            event.event_date = datetime.strptime(data['date'], '%Y-%m-%d')
+        event.event_type = data.get('type', event.event_type)
+        db.session.commit()
+        return jsonify({"status": "updated"})
