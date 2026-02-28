@@ -128,3 +128,4 @@ def send_student_invite(to_email: str, invite_link: str, instructor_name: str, c
     """
     text = f"You were invited by {instructor_name}. Accept here: {invite_link}"
     return _send_email(to_email, subject, html, text)
+

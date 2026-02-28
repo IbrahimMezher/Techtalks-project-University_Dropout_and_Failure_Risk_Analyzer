@@ -32,13 +32,16 @@ def dashboard():
                     instructor_by_course[inv.course_id] = f"{inst.first_name} {inst.last_name}".strip()
 
     processed_courses = []
+    alert_count = 0
     for e in student_enrollments:
         if e.attendance_rate < 70 or e.current_grade < 65:
             risk_class = "status-badge status-danger"
             risk_text = "High Risk"
+            alert_count += 1
         elif e.attendance_rate < 85 or e.current_grade < 75:
             risk_class = "status-badge status-warn"
             risk_text = "Moderate"
+            alert_count += 1
         else:
             risk_class = "status-badge status-good"
             risk_text = "Low Risk"
@@ -54,36 +57,68 @@ def dashboard():
             "icon": icon_text,
             "instructor": instructor_name,
             "target_class": risk_class,
-            "target_text": risk_text,
+            "risk_text": risk_text,
         })
 
     today = datetime.utcnow().date()
-    end = today + timedelta(days=7)
+    
 
-    upcoming = (
-        CalendarEvent.query
-        .filter(CalendarEvent.user_id == current_user.id)
-        .filter(CalendarEvent.event_date >= datetime(today.year, today.month, today.day))
-        .filter(CalendarEvent.event_date < datetime(end.year, end.month, end.day))
-        .order_by(CalendarEvent.event_date.asc())
-        .limit(8)
-        .all()
-    )
+    all_events = []
 
-    upcoming_events = [{
-        "title": e.title,
-        "date": e.event_date.strftime("%Y-%m-%d"),
-        "pretty": e.event_date.strftime("%b %d"),
-        "type": e.event_type or "Deadline"
-    } for e in upcoming]
+   
+    manual_events = CalendarEvent.query.filter(
+        CalendarEvent.user_id == current_user.id,
+        CalendarEvent.event_date >= datetime.combine(today, datetime.min.time())
+    ).all()
+
+    for e in manual_events:
+        e_date = e.event_date.date()
+        days_diff = (e_date - today).days
+        if 0 <= days_diff < 7:
+            all_events.append({
+                "title": e.title,
+                "date": e_date,
+                "pretty": e.event_date.strftime("%b %d"),
+                "type": e.event_type or "Deadline"
+            })
+
+    
+    for enr in student_enrollments:
+        c_name = enr.course.course_name if enr.course else "Course"
+        for g in enr.grades:
+            if g.date_recorded:
+                days_diff = (g.date_recorded - today).days
+                if 0 <= days_diff < 7:
+                    all_events.append({
+                        "title": f"{c_name} - {g.exam_name}",
+                        "date": g.date_recorded,
+                        "pretty": g.date_recorded.strftime("%b %d"),
+                        "type": "Exam"
+                    })
+
+    all_events.sort(key=lambda x: x['date'])
+
+    
+    week_days = []
+    for i in range(7):
+        d = today + timedelta(days=i)
+        d_events = [ev for ev in all_events if ev['date'] == d]
+        week_days.append({
+            "dow": d.strftime("%a"),
+            "day": d.day,
+            "events": d_events,
+            "count": len(d_events)
+        })
 
     return render_template(
         "studenthomepage.html",
         user=current_user,
         courses=processed_courses,
         total_courses=total_courses,
+        alert_count=alert_count,
         overall_attendance=round(total_attendance, 1),
-        upcoming_events=upcoming_events,
+        week_days=week_days,
+        upcoming_7=all_events,
         active_page="dashboard"
     )
 
@@ -349,9 +384,124 @@ def manage_events():
         db.session.commit()
         return jsonify({"status": "success"})
 
-    events = CalendarEvent.query.filter_by(user_id=current_user.id).all()
-    return jsonify([{
-        "title": e.title,
-        "date": e.event_date.strftime('%Y-%m-%d'),
-        "type": e.event_type
-    } for e in events])
+    
+    events_list = []
+
+    
+    manual_events = CalendarEvent.query.filter_by(user_id=current_user.id).all()
+    for e in manual_events:
+        events_list.append({
+            "id": e.id,
+            "title": e.title,
+            "date": e.event_date.strftime('%Y-%m-%d'),
+            "type": e.event_type,
+            "is_manual": True
+        })
+
+    
+    enrollments = Enrollment.query.filter_by(user_id=current_user.id).all()
+    for enr in enrollments:
+        course_name = enr.course.course_name if enr.course else "Course"
+
+       
+        for g in enr.grades:
+            if g.date_recorded:
+                events_list.append({
+                    "id": None,
+                    "title": f"{course_name} - {g.exam_name}",
+                    "date": g.date_recorded.strftime('%Y-%m-%d'),
+                    "type": "Exam",
+                    "is_manual": False
+                })
+
+        
+        for a in enr.attendance_records:
+            if a.date:
+                events_list.append({
+                    "id": None,
+                    "title": f"{course_name} - {a.status}",
+                    "date": a.date.strftime('%Y-%m-%d'),
+                    "type": "Attendance",
+                    "is_manual": False
+                })
+
+    return jsonify(events_list)
+
+@student_views.route('/api/events/<int:event_id>', methods=['PUT', 'DELETE'])
+@login_required
+def modify_event(event_id):
+    event = CalendarEvent.query.get_or_404(event_id)
+    if event.user_id != current_user.id:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    if request.method == 'DELETE':
+        db.session.delete(event)
+        db.session.commit()
+        return jsonify({"status": "deleted"})
+
+    if request.method == 'PUT':
+        data = request.json
+        event.title = data.get('title', event.title)
+        if 'date' in data:
+            event.event_date = datetime.strptime(data['date'], '%Y-%m-%d')
+        event.event_type = data.get('type', event.event_type)
+        db.session.commit()
+        return jsonify({"status": "updated"})
+
+@student_views.route('/run-scan')
+@login_required
+def run_scan():
+    enrollments = Enrollment.query.filter_by(user_id=current_user.id).all()
+    
+    
+    instructor_by_course = {}
+    if current_user.email:
+        accepted_invites = (
+            StudentInvite.query
+            .filter_by(student_email=current_user.email, accepted=True)
+            .order_by(StudentInvite.accepted_at.desc())
+            .all()
+        )
+        for inv in accepted_invites:
+            if inv.course_id and inv.course_id not in instructor_by_course:
+                inst = User.query.get(inv.instructor_id)
+                if inst:
+                    instructor_by_course[inv.course_id] = f"{inst.first_name} {inst.last_name}".strip()
+
+    alerts = []
+    analysis = []
+
+    for e in enrollments:
+        instructor_name = instructor_by_course.get(e.course_id, "Not assigned")
+        icon_text = (e.course.course_code[:2].upper() if e.course.course_code else e.course.course_name[:2].upper())
+
+        if e.attendance_rate < 70 or e.current_grade < 65:
+            risk_text = "High Risk"
+            risk_class = "danger"
+            alerts.append({
+                "level": "High",
+                "message": f"Critical: {e.course.course_name} (Grade: {e.current_grade}%, Att: {e.attendance_rate}%)"
+            })
+        elif e.attendance_rate < 85 or e.current_grade < 75:
+            risk_text = "Moderate"
+            risk_class = "warn"
+            alerts.append({
+                "level": "Moderate",
+                "message": f"Warning: {e.course.course_name} is at Moderate Risk."
+            })
+        else:
+            risk_text = "Low Risk"
+            risk_class = "good"
+
+        analysis.append({
+            "course": e.course.course_name,
+            "code": e.course.course_code,
+            "icon": icon_text,
+            "instructor": instructor_name,
+            "risk_text": risk_text,
+            "risk_class": risk_class,
+            "attendance": round(e.attendance_rate, 1),
+            "grade": round(e.current_grade, 1)
+        })
+
+    return jsonify({"alerts": alerts, "analysis": analysis})
