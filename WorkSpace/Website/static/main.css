@@ -404,5 +404,5 @@ textarea:focus{
 .sidebar-link.active { background: var(--glass); color: var(--primary); border-color: var(--ring); }
 .sidebar-link.danger { color: var(--danger); }
 .sidebar-link.danger:hover { background: rgba(220,38,38,.08); border-color: rgba(220,38,38,.22); }
+.sidebar-link.danger:hover { background: rgba(220,38,38,.08); border-color: rgba(220,38,38,.22); }
 
- 

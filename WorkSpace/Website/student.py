@@ -355,4 +355,3 @@ def manage_events():
         "date": e.event_date.strftime('%Y-%m-%d'),
         "type": e.event_type
     } for e in events])
-

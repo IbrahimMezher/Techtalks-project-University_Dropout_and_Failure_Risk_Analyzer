@@ -10,12 +10,6 @@ instructor = Blueprint('instructor', __name__)
 
 
 def risk_bucket(attendance_rate: float, current_grade: float):
-    """
-    Simple, explainable rule-based risk:
-    - High if attendance < 60 OR grade < 55
-    - Medium if attendance < 75 OR grade < 70
-    - Low otherwise
-    """
     a = attendance_rate or 0.0
     g = current_grade or 0.0
 

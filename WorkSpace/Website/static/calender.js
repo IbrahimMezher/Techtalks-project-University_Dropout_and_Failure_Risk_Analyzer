@@ -85,3 +85,4 @@ function addEventPrompt() {
     }).then(() => fetchEvents());
   }
 }
+

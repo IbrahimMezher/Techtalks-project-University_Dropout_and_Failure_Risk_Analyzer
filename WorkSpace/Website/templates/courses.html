@@ -261,7 +261,7 @@
       </form>
     </div>
 
-    
+
     <div id="modal-edit-enroll" class="modal" style="display:none;">
       <form class="modal-card form" method="POST" action="{{ url_for('student_views.edit_enrollment') }}">
         <h3>Edit Enrollment</h3>
@@ -334,7 +334,7 @@
 
   <script src="{{ url_for('static', filename='main.js') }}"></script>
   <script>
-    
+
     function openEditEnroll(enrollId, courseName, courseCode) {
       document.getElementById('edit-enroll-id').value = enrollId;
       document.getElementById('edit-course-name').value = courseName;
@@ -351,7 +351,7 @@
       form.submit();
     }
 
-    
+
     function openEditAttendance(attId, enrollId, attDate, status) {
       document.getElementById('edit-att-id').value = attId;
       document.getElementById('edit-att-date').value = attDate;
@@ -368,7 +368,7 @@
       form.submit();
     }
 
-    
+
     function openEditGrade(gradeId, enrollId, examName, score, weight, dateRecorded) {
       document.getElementById('edit-grade-id').value = gradeId;
       document.getElementById('edit-exam-name').value = examName;
@@ -387,7 +387,7 @@
       form.submit();
     }
 
-    
+
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('nav-courses').addEventListener('click', () => showPanel('courses'));
       document.getElementById('nav-attendance').addEventListener('click', () => showPanel('attendance'));
@@ -403,7 +403,7 @@
         document.getElementById('modal-resolve').style.display = 'flex';
       });
 
-      
+
       document.querySelectorAll('.modal').forEach(modal => {
         modal.addEventListener('click', (e) => {
           if (e.target === modal) {
